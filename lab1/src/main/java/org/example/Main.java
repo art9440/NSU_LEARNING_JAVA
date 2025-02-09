@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         try{
             if (args.length < 2){
-                throw new IllegalArgumentException("No arguments!");
+                throw new IllegalArgumentException("Not enough arguments!");
             }
 
             String inputFile = args[0];

@@ -26,7 +26,7 @@ public class DataReader {
     public void readFromFile(String inputFile){
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(inputFile)) {
             if (inputStream == null) {
-                throw new FileNotFoundException("Файл не найден в resources: " + inputFile);
+                throw new FileNotFoundException("Not found file in folder resources: " + inputFile);
             }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
