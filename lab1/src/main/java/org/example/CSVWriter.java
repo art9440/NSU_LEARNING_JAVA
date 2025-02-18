@@ -34,8 +34,6 @@ public class CSVWriter {
         {
             System.err.println("Error when writing to CSV: " + e.getMessage());
         }
-        {
 
-        }
     }
 }
