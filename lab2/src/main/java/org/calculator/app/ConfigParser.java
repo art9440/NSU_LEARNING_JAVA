@@ -6,7 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class ConfigParser {
-    String inputFile;
+    private final String inputFile;
 
     public ConfigParser(String inputFile){ this.inputFile = inputFile;}
 
@@ -21,11 +21,12 @@ public class ConfigParser {
             String command;
             while ((command = configReader.readLine()) != null){
                 command = command.trim();
-                if (command.startsWith("#")){
+                if (command.startsWith("#") || command.isEmpty()){
                     continue;
                 }
                 else{
                     String[] commandArray = command.split(" ");
+
 
 
                 }

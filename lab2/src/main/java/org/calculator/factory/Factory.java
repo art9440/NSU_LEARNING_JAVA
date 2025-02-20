@@ -3,10 +3,11 @@ package org.calculator.factory;
 
 
 public class Factory {
-    String factoryConfig;
+    private final String factoryConfig;
 
     public Factory(String factoryConfig) {this.factoryConfig = factoryConfig;}
 
-    
+
+
 
 }

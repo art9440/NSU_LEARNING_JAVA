@@ -29,8 +29,8 @@ public class Main {
 
                 } else {
                     String inputFile = args[0];
-                    ConfigParser calculCommands = new ConfigParser(inputFile);
-                    calculCommands.readConfig();
+                    ConfigParser calcCommands = new ConfigParser(inputFile);
+                    calcCommands.readConfig();
                 }
             }
         }
