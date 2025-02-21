@@ -4,9 +4,9 @@ import org.calculator.exeptions.ManyArgumentsException;
 import org.calculator.factory.Factory;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,7 +21,7 @@ public class Main {
                 if (args.length < 1) {
                     System.out.println("Console mode is on. Write exit to get out");
                     Scanner input = new Scanner(System.in);
-                    String command = new String();
+                    String command = " ";
                     while (command.equals("exit\n")) {
                         command = input.nextLine();
                         //Some working ....
@@ -30,7 +30,17 @@ public class Main {
                 } else {
                     String inputFile = args[0];
                     ConfigParser calcCommands = new ConfigParser(inputFile);
-                    calcCommands.readConfig();
+                    BiConsumer<String, String[]> commandLine = (command, arguments) -> {
+                        try {
+                            System.out.println(command + " " + Arrays.toString(arguments));
+
+
+                        } catch (Exception e) {
+                            //throw new RuntimeException(e);
+                        }
+                    };
+
+                    calcCommands.readConfig(commandLine);
                 }
             }
         }
@@ -39,3 +49,6 @@ public class Main {
         }
     }
 }
+
+//через BiConsuming буду возвращать команды и потом в фабрике создавать команду и затем с помощью метода apply, передавая
+//в него контекст, буду ее выполнять

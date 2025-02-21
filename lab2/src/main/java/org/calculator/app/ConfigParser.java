@@ -1,16 +1,17 @@
 package org.calculator.app;
 
-import org.calculator.factory.Factory;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.function.BiConsumer;
 
 public class ConfigParser {
     private final String inputFile;
 
+
     public ConfigParser(String inputFile){ this.inputFile = inputFile;}
 
-    public void readConfig(){
+    public void readConfig(BiConsumer<String, String[]> commandLine){
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(inputFile)){
             if (inputStream == null){
                 throw new FileNotFoundException("Not found file in folder resources: " + inputFile);
@@ -26,7 +27,7 @@ public class ConfigParser {
                 }
                 else{
                     String[] commandArray = command.split(" ");
-
+                    commandLine.accept(commandArray[0], Arrays.copyOfRange(commandArray, 1, commandArray.length));
 
 
                 }
