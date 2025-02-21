@@ -5,7 +5,7 @@ import org.calculator.factory.Factory;
 
 import java.io.*;
 import java.util.Scanner;
-import java.util.*;
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 
 public class Main {
@@ -33,10 +33,11 @@ public class Main {
                     BiConsumer<String, String[]> commandLine = (command, arguments) -> {
                         try {
                             System.out.println(command + " " + Arrays.toString(arguments));
-
+                            Factory.createCommand(command, arguments);
+                            Factory.apply(context);
 
                         } catch (Exception e) {
-                            //throw new RuntimeException(e);
+                            System.out.println(e.getMessage());
                         }
                     };
 
