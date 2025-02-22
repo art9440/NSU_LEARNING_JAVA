@@ -19,7 +19,26 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/java/org/calculator/factory</directory>
+                <includes>
+                    <include>**/*.txt</include>
+                </includes>
+
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.txt</include>  <!-- Копируем все .txt файлы -->
+                </includes>
+            </resource>
+        </resources>
     </build>
+
+
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
