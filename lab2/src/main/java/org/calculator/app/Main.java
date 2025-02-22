@@ -34,16 +34,17 @@ public class Main {
                     BiConsumer<String, String[]> commandLine = (command, arguments) -> {
                         try {
                             System.out.println(command + " " + Arrays.toString(arguments));
-                            FactoryForCalc.createCommand(command, arguments);
+                            Object newCommand = FactoryForCalc.createCommand(command, arguments);
+                            System.out.println("✅ Команда успешно создана: " + newCommand.getClass().getSimpleName());
                             FactoryForCalc.apply(context);
 
                         }
                         catch (IOException e){
-                            System.out.println(e.getMessage() + "/");
+                            System.err.println(e.getMessage() + "/");
                             System.exit(1);
 
                         } catch (CommandNotFoundException | ClassNotFoundException e) {
-                            System.out.println(e.getMessage());
+                            System.err.println(e.getMessage());
                         }
                     };
 
@@ -52,7 +53,7 @@ public class Main {
             }
         }
         catch (ManyArgumentsException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 }

@@ -5,6 +5,7 @@ import org.calculator.app.Context;
 import org.calculator.exeptions.CommandNotFoundException;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
 public class Factory {
@@ -18,15 +19,25 @@ public class Factory {
 
     }
 
-    public void createCommand(String command, String[] arguments) throws ClassNotFoundException, IOException, CommandNotFoundException {
-        String pathToCommand = search(command);
-        System.out.println(pathToCommand);
-        Class<?> newCommand = Class.forName(pathToCommand);
+    public Object createCommand(String command, String[] arguments) throws ClassNotFoundException, IOException, CommandNotFoundException{
+        try {
+            String pathToCommand = search(command);
+            System.out.println(pathToCommand);
+            Object newCommand = Class.forName(pathToCommand).getDeclaredConstructor().newInstance();
 
+
+
+            return newCommand;
+        }
+        catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e){
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return null;
     }
 
     private String search(String command) throws IOException, CommandNotFoundException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("factoryconfig.txt");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(factoryConfig);
 
         if (inputStream == null) {
             throw new FileNotFoundException("Can`t find factory config.");
