@@ -3,6 +3,8 @@ package org.calculator.app;
 import org.calculator.commands.Command;
 import org.calculator.exeptions.CommandNotFoundException;
 import org.calculator.exeptions.ManyArgumentsException;
+import org.calculator.exeptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.StackIsEmptyException;
 import org.calculator.factory.Factory;
 
 import java.io.*;
@@ -43,10 +45,10 @@ public class Main {
 
                         }
                         catch (IOException e){
-                            System.err.println(e.getMessage() + "/");
+                            System.err.println(e.getMessage());
                             System.exit(1);
 
-                        } catch (CommandNotFoundException | ClassNotFoundException e) {
+                        } catch (CommandNotFoundException | ClassNotFoundException | NoSuchVariableInMapException e) {
                             System.err.println(e.getMessage());
                         }
                     };

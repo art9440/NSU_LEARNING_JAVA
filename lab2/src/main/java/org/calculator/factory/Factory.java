@@ -28,8 +28,7 @@ public class Factory {
 
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e){
-            System.out.println("*");
-            System.err.println(e.getMessage());
+            System.err.println("Something went wrong in Creating command with using this class ->  " + e.getMessage());
             System.exit(1);
         }
         return null;
