@@ -11,8 +11,8 @@ public class ConfigParser {
 
     public ConfigParser(String inputFile){ this.inputFile = inputFile;}
 
-    public void readConfig(BiConsumer<String, String[]> commandLine){
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(inputFile)){
+    public void readConfig(BiConsumer<String, String[]> commandLine) throws IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(inputFile);
             if (inputStream == null){
                 throw new FileNotFoundException("Not found file in folder resources: " + inputFile);
             }
@@ -33,9 +33,7 @@ public class ConfigParser {
                 }
             }
 
-        }
-        catch (IOException e){
-            System.err.println("Error while reading file:" + e.getLocalizedMessage());
-        }
+            inputStream.close();
+
     }
 }

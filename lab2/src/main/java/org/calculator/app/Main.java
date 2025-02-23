@@ -4,8 +4,9 @@ import org.calculator.commands.Command;
 import org.calculator.exeptions.CommandNotFoundException;
 import org.calculator.exeptions.ManyArgumentsException;
 import org.calculator.exeptions.NoSuchVariableInMapException;
-import org.calculator.exeptions.StackIsEmptyException;
 import org.calculator.factory.Factory;
+
+import java.util.logging.*;
 
 import java.io.*;
 import java.util.Scanner;
@@ -24,14 +25,9 @@ public class Main {
 
                 if (args.length < 1) {
                     System.out.println("Console mode is on. Write exit to get out");
-                    Scanner input = new Scanner(System.in);
-                    String command = " ";
-                    while (command.equals("exit\n")) {
-                        command = input.nextLine();
-                        //Some working ....
-                    }
-
-                } else {
+                    workInConsoleMode(FactoryForCalc, context);
+                }
+                else {
                     String inputFile = args[0];
                     ConfigParser calcCommands = new ConfigParser(inputFile);
                     BiConsumer<String, String[]> commandLine = (command, arguments) -> {
@@ -46,14 +42,17 @@ public class Main {
                         }
                         catch (IOException e){
                             System.err.println(e.getMessage());
-                            System.exit(1);
+                            workInConsoleMode(FactoryForCalc, context);
 
                         } catch (CommandNotFoundException | ClassNotFoundException | NoSuchVariableInMapException e) {
                             System.err.println(e.getMessage());
                         }
                     };
-
-                    calcCommands.readConfig(commandLine);
+                    try {
+                        calcCommands.readConfig(commandLine);
+                    } catch (IOException e) {
+                        workInConsoleMode(FactoryForCalc, context);
+                    }
                 }
             }
         }
@@ -61,7 +60,33 @@ public class Main {
             System.err.println(e.getMessage());
         }
     }
+
+
+    private static void workInConsoleMode(Factory factoryForCalc, Context context){
+        Scanner input = new Scanner(System.in);
+
+        while (true) {
+            System.out.print("> "); // Символ приглашения
+            String commandLine = input.nextLine().trim();
+            if (commandLine.equalsIgnoreCase("exit")) {
+                System.out.println("Выход из системы");
+                break;
+            }
+
+            String[] parts = commandLine.split(" ");
+            String command = parts[0];
+            String[] arguments = Arrays.copyOfRange(parts, 1, parts.length);
+
+            try {
+                Command newCommand = factoryForCalc.createCommand(command, arguments);
+                System.out.println("Команда: " + newCommand.getClass().getSimpleName());
+                newCommand.apply(context);
+            } catch (IOException e) {
+                System.err.println("Ошибка: " + e.getMessage());
+            } catch (CommandNotFoundException | ClassNotFoundException | NoSuchVariableInMapException e) {
+                System.err.println("Ошибка выполнения команды: " + e.getMessage());
+            }
+        }
+    }
 }
 
-//через BiConsuming буду возвращать команды и потом в фабрике создавать команду и затем с помощью метода apply, передавая
-//в него контекст, буду ее выполнять

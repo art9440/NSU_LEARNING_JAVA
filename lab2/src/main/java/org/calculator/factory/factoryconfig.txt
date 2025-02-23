@@ -1,9 +1,9 @@
 DEFINE=org.calculator.commands.Define
 PUSH=org.calculator.commands.Push
-ADD=org.calculator.commands.Addition
-DIV=org.calculator.commands.Division
-MUL=org.calculator.commands.Multiplication
++=org.calculator.commands.Addition
+/=org.calculator.commands.Division
+*=org.calculator.commands.Multiplication
 POP=org.calculator.commands.Pop
 PRINT=org.calculator.commands.Print
 SQRT=org.calculator.commands.Sqrt
-SUB==org.calculator.commands.Subtraction
+-=org.calculator.commands.Subtraction
