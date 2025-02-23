@@ -1,4 +1,11 @@
 package org.calculator.commands;
 
-public class Multiplication {
+import org.calculator.app.Context;
+
+public class Multiplication implements Command{
+    public Multiplication(String[] arguments) {}
+    @Override
+    public void apply(Context context) {
+
+    }
 }

@@ -1,4 +1,11 @@
 package org.calculator.commands;
 
-public class Pop {
+import org.calculator.app.Context;
+
+public class Pop implements Command{
+    public Pop(String[] arguments) {}
+    @Override
+    public void apply(Context context) {
+
+    }
 }

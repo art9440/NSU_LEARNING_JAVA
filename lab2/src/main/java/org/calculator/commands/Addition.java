@@ -1,4 +1,12 @@
 package org.calculator.commands;
 
-public class Addition {
+import org.calculator.app.Context;
+
+public class Addition implements Command{
+
+    public Addition(String[] arguments) {}
+    @Override
+    public void apply(Context context) {
+
+    }
 }

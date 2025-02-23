@@ -1,5 +1,6 @@
 package org.calculator.app;
 
+import org.calculator.commands.Command;
 import org.calculator.exeptions.CommandNotFoundException;
 import org.calculator.exeptions.ManyArgumentsException;
 import org.calculator.factory.Factory;
@@ -34,9 +35,11 @@ public class Main {
                     BiConsumer<String, String[]> commandLine = (command, arguments) -> {
                         try {
                             System.out.println(command + " " + Arrays.toString(arguments));
-                            Object newCommand = FactoryForCalc.createCommand(command, arguments);
+                            Command newCommand = FactoryForCalc.createCommand(command, arguments);
+
                             System.out.println("✅ Команда успешно создана: " + newCommand.getClass().getSimpleName());
-                            FactoryForCalc.apply(context);
+
+                            newCommand.apply(context);
 
                         }
                         catch (IOException e){

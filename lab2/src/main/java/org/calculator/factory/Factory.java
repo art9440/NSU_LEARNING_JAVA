@@ -2,11 +2,13 @@ package org.calculator.factory;
 
 
 import org.calculator.app.Context;
+import org.calculator.commands.Command;
 import org.calculator.exeptions.CommandNotFoundException;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class Factory {
     private final String factoryConfig;
@@ -15,21 +17,18 @@ public class Factory {
         this.factoryConfig = factoryConfig;
     }
 
-    public void apply(Context context) {
 
-    }
-
-    public Object createCommand(String command, String[] arguments) throws ClassNotFoundException, IOException, CommandNotFoundException{
+    public Command createCommand(String command, String[] arguments) throws ClassNotFoundException, IOException, CommandNotFoundException{
         try {
             String pathToCommand = search(command);
             System.out.println(pathToCommand);
-            Object newCommand = Class.forName(pathToCommand).getDeclaredConstructor().newInstance();
 
 
+            return (Command) Class.forName(pathToCommand).getDeclaredConstructor(String[].class).newInstance((Object) arguments);
 
-            return newCommand;
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e){
+            System.out.println("*");
             System.err.println(e.getMessage());
             System.exit(1);
         }
