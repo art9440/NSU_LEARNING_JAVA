@@ -23,7 +23,6 @@ public class Factory {
         try {
             String pathToCommand = search(command);
             logger.info("Path to command: " + command + " is: " + pathToCommand);
-            //System.out.println(pathToCommand);
 
 
             return (Command) Class.forName(pathToCommand).getDeclaredConstructor(String[].class).newInstance((Object) arguments);
@@ -36,7 +35,7 @@ public class Factory {
         return null;
     }
 
-    private String search(String command) throws IOException, CommandNotFoundException {
+    String search(String command) throws IOException, CommandNotFoundException {
         logger.info("Searching path for command: " + command + " is started.");
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(factoryConfig);
         logger.info("factory config file was opened.");

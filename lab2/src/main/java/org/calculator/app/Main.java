@@ -96,7 +96,6 @@ public class Main {
                 logger.info("Creating command.");
                 Command newCommand = factoryForCalc.createCommand(command, arguments);
                 logger.info("Command created.");
-                //System.out.println("Команда: " + newCommand.getClass().getSimpleName());
                 logger.info("Applying command...");
                 newCommand.apply(context);
                 logger.info("Command was applied.");

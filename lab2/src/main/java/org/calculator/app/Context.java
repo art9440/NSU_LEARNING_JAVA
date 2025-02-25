@@ -29,6 +29,7 @@ public class Context {
         if (!varValues.containsKey(variable)) {
             throw new NoSuchVariableInMapException("Can`t find definition of variable: " + variable);
         }
+        logger.info("Get value for variable: " + variable);
         return varValues.get(variable);
     }
 
