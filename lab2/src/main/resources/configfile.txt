@@ -2,6 +2,6 @@ DEFINE a 80
 PUSH b
 PUSH a
 PUSH 8
-/
++
 -
 PRINT

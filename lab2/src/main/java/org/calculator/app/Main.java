@@ -7,7 +7,6 @@ import org.calculator.exeptions.NoSuchVariableInMapException;
 import org.calculator.factory.Factory;
 
 import java.util.logging.*;
-import java.nio.file.*;
 
 import java.io.*;
 import java.util.Scanner;

@@ -1,0 +1,7 @@
+DEFINE a 4
+DEFINE b 5
+PUSH a
+PUSH b
+SQRT
+*
+PRINT

@@ -1,185 +1,185 @@
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main main
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main main
 INFO: Running program
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main main
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main main
 INFO: Factory is created
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main main
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main main
 INFO: Context is created
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main main
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main main
 INFO: ConfigParser is created.
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Reading config is started.
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Reading commands from config...
 
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: DEFINE. With arguments: [a, 80]
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: DEFINE is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: DEFINE is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: DEFINE was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: DEFINE is: org.calculator.commands.Define
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Define
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Define
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context putToMap
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context putToMap
 INFO: Creating variable: a = 80.0
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: PUSH. With arguments: [b]
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: PUSH is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: PUSH is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: PUSH was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: PUSH is: org.calculator.commands.Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 WARNING: Can`t find definition of variable: b
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: PUSH. With arguments: [a]
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: PUSH is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: PUSH is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: PUSH was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: PUSH is: org.calculator.commands.Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context push
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context push
 INFO: 80.0 is on top of the stack
-Feb 25, 2025 1:53:15 PM org.calculator.commands.Push apply
+Feb 25, 2025 1:56:42 PM org.calculator.commands.Push apply
 INFO: PUSH: a = 80.0 (variable)
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: PUSH. With arguments: [8]
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: PUSH is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: PUSH is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: PUSH was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: PUSH is: org.calculator.commands.Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Push
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context push
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context push
 INFO: 8.0 is on top of the stack
-Feb 25, 2025 1:53:15 PM org.calculator.commands.Push apply
+Feb 25, 2025 1:56:42 PM org.calculator.commands.Push apply
 INFO: PUSH: 8.0 (value)
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
-INFO: Was written command: /. With arguments: []
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
-INFO: Process of creating command: / is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
-INFO: Searching path for command: / is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
+INFO: Was written command: +. With arguments: []
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
+INFO: Process of creating command: + is started
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
+INFO: Searching path for command: + is started.
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
-INFO: Command: / was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
+INFO: Command: + was found in factory config.
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
-INFO: Path to command: / is: org.calculator.commands.Division
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
-INFO: Command successfully created: Division
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
-INFO: Applying command: Division
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context pop
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
+INFO: Path to command: + is: org.calculator.commands.Addition
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
+INFO: Command successfully created: Addition
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
+INFO: Applying command: Addition
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context pop
 INFO: value was pop from stack.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context pop
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context pop
 INFO: value was pop from stack.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context push
-INFO: 0.1 is on top of the stack
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context push
+INFO: 88.0 is on top of the stack
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: -. With arguments: []
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: - is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: - is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: - was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: - is: org.calculator.commands.Subtraction
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Subtraction
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Subtraction
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context pop
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context pop
 INFO: value was pop from stack.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context push
-INFO: 0.1 is on top of the stack
-Feb 25, 2025 1:53:15 PM org.calculator.commands.Subtraction apply
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context push
+INFO: 88.0 is on top of the stack
+Feb 25, 2025 1:56:42 PM org.calculator.commands.Subtraction apply
 WARNING: No values in calculator.
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Command was read from config file.
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Was written command: PRINT. With arguments: []
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Process of creating command: PRINT is started
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Searching path for command: PRINT is started.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file was opened.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: Command: PRINT was found in factory config.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory search
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory search
 INFO: factory config file is closed.
-Feb 25, 2025 1:53:15 PM org.calculator.factory.Factory createCommand
+Feb 25, 2025 1:56:42 PM org.calculator.factory.Factory createCommand
 INFO: Path to command: PRINT is: org.calculator.commands.Print
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Command successfully created: Print
-Feb 25, 2025 1:53:15 PM org.calculator.app.Main lambda$main$0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Main lambda$main$0
 INFO: Applying command: Print
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context pop
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context pop
 INFO: value was pop from stack.
-Feb 25, 2025 1:53:15 PM org.calculator.commands.Print apply
-INFO: Was printed: 0.1
-Feb 25, 2025 1:53:15 PM org.calculator.app.Context push
-INFO: 0.1 is on top of the stack
-Feb 25, 2025 1:53:15 PM org.calculator.app.ConfigParser readConfig
+Feb 25, 2025 1:56:42 PM org.calculator.commands.Print apply
+INFO: Was printed: 88.0
+Feb 25, 2025 1:56:42 PM org.calculator.app.Context push
+INFO: 88.0 is on top of the stack
+Feb 25, 2025 1:56:42 PM org.calculator.app.ConfigParser readConfig
 INFO: Config file was closed.
