@@ -1,6 +1,7 @@
 package org.calculator.commands;
 
 import org.calculator.app.Context;
+import org.calculator.exeptions.ManyArgumentsException;
 
 import java.util.Arrays;
 
@@ -11,9 +12,9 @@ public class Define implements Command{
         this.args = args;
     }
     @Override
-    public void apply(Context context){
+    public void apply(Context context) throws ManyArgumentsException {
         if (args.length != 2){
-            throw new IllegalArgumentException("DEFINE need 2 arguments");
+            throw new ManyArgumentsException("DEFINE need 2 arguments");
         }
 
         String variable = args[0];

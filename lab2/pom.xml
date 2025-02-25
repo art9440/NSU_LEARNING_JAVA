@@ -35,6 +35,13 @@
                     <include>**/*.txt</include>  <!-- Копируем все .txt файлы -->
                 </includes>
             </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>logging.properties</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 

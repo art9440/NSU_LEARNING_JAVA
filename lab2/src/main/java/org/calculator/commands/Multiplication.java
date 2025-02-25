@@ -3,7 +3,10 @@ package org.calculator.commands;
 import org.calculator.app.Context;
 import org.calculator.exeptions.StackIsEmptyException;
 
+import java.util.logging.Logger;
+
 public class Multiplication implements Command{
+    private static final Logger logger = Logger.getLogger(Multiplication.class.getName());
     public Multiplication(String[] arguments) {}
     @Override
     public void apply(Context context)  {
@@ -11,14 +14,14 @@ public class Multiplication implements Command{
         try {
             first = context.pop();
         } catch (StackIsEmptyException e) {
-            System.err.println(e.getMessage());
+            logger.warning(e.getMessage());
             return;
         }
         try{
             second = context.pop();
         } catch (StackIsEmptyException e) {
             context.push(first);
-            System.err.println(e.getMessage());
+            logger.warning(e.getMessage());
             return;
         }
         context.push(first * second);

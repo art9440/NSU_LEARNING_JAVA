@@ -1,4 +1,7 @@
-DEFINE a 4
+DEFINE a 80
+PUSH b
 PUSH a
-SQRT
+PUSH 8
+/
+-
 PRINT
