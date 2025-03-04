@@ -33,11 +33,24 @@ public class ButtonsListener implements ActionListener {
                 GUIView view = new GUIView(model);
                 view.showAbout();
             }
-            case "Start Game" -> model.launchGame();
+            case "Start Game" -> {
+                view.dispose();
+                GUIView view = new GUIView(model);
+                view.showSettings();
+                model.launchGame();
+            }
             case "Back to menu" -> {
                 view.dispose();
                 GUIView view = new GUIView(model);
                 view.showMainMenu();
+            }
+            case "Confirm Settings" -> {
+                //int h =
+                //model.setSettings();
+            }
+            case "Default Settings" -> {
+                view.dispose();
+                model.setSettings(9, 9, 10);
             }
         }
     }

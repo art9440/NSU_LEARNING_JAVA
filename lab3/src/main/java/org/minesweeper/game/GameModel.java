@@ -8,9 +8,19 @@ import java.util.Map;
 
 public class GameModel {
     private final String gameMode;
-    private Map<String, Integer> highScores = new HashMap<>();
+    private Integer fieldWidth;
+    private Integer fieldHeight;
+    private Integer bombsAmount;
+
+
     public GameModel(String gameMode){
         this.gameMode = gameMode;
+    }
+
+    public void setSettings(Integer height, Integer width, Integer bombs){
+        this.fieldHeight = height;
+        this.fieldWidth = width;
+        this.bombsAmount = bombs;
     }
 
     public void exitFromApp(){

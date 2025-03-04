@@ -40,4 +40,12 @@ public class GUIView {
         highScores.setVisible(true);
         highScores.setMinimumSize(new Dimension(400, 300));
     }
+
+    public void showSettings(){
+        Settings settings = new Settings("Settings", 400, 400);
+        settings.initWindow(model);
+        settings.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        settings.setResizable(false);
+        settings.setVisible(true);
+    }
 }
