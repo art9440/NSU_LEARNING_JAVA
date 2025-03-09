@@ -12,7 +12,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class MinesWeeper extends JFrame implements PauseDialog{
     private final int width, height;
@@ -49,7 +48,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         gamePanel = new JPanel(new GridLayout(h, w));
         fieldButtons = new FieldButton[h][w];
         MouseListener mouseListener = new MouseListener(model, this);
-        origImg = loadImg("images/none.png");
+        origImg = loadImg("images/0.png");
         for(int i = 0; i < h; i++){
             for(int j = 0; j < w; j++){
                 fieldButtons[i][j] = new FieldButton(i, j);
@@ -123,4 +122,11 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
         pauseDialog.setVisible(true);
     }
+
+    public FieldButton getFieldButton(int x, int y) {
+        return fieldButtons[x][y];
+    }
+
+
+
 }

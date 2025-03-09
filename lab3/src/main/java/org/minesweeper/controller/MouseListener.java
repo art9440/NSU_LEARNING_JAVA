@@ -1,5 +1,6 @@
 package org.minesweeper.controller;
 
+import org.minesweeper.GUIView.MinesWeeperWindow.FieldButton;
 import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
 import org.minesweeper.game.GameModel;
 
@@ -18,10 +19,19 @@ public class MouseListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e){
+        FieldButton button = (FieldButton) e.getSource();
+        int x = button.getXCoord();
+        int y = button.getYCoord();
         if (SwingUtilities.isLeftMouseButton(e)) {
-
+            openCell(button, x, y);
         }
         else if(SwingUtilities.isRightMouseButton(e)){
+
+        }
+    }
+
+    private void openCell(FieldButton button, int x, int y){
+        if(model.checkBomb(x, y)) {
 
         }
     }

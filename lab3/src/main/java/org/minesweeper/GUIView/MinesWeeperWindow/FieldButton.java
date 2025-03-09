@@ -28,5 +28,13 @@ public class FieldButton extends JButton{
         return isbomb;
     }
 
+    public int getXCoord() { return x; }
+    public int getYCoord() { return y; }
+
+    private boolean revealed = false;
+    public boolean isRevealed() { return revealed; }
+    public void setRevealed(boolean revealed) { this.revealed = revealed; }
+
+
 
 }
