@@ -1,4 +1,4 @@
-package org.minesweeper.GUIView;
+package org.minesweeper.GUIView.HighScoresWindow;
 
 import javax.swing.*;
 import java.awt.*;

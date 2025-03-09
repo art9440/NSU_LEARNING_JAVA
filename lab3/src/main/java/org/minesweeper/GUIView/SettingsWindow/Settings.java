@@ -1,15 +1,14 @@
-package org.minesweeper.GUIView;
+package org.minesweeper.GUIView.SettingsWindow;
 
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class Settings extends JFrame {
+public class Settings extends JFrame implements TextFieldProvider{
     private JPanel panel;
     private BoxLayout boxLayoutButtons, boxLayoutText;
     private JButton backToMenu, confirm, defaultB;
@@ -17,6 +16,9 @@ public class Settings extends JFrame {
     private ActionListener buttonsListener;
     private JTextField heightField, widthField, bombsField;
 
+    public String[] getTextField(){
+        return new String[]{heightField.getText(), widthField.getText(), bombsField.getText()};
+    }
 
     public Settings(String winTitle, int w, int h){
         super(winTitle);
@@ -81,9 +83,9 @@ public class Settings extends JFrame {
         getContentPane().add(panel);
 
     }
-
+//нужно починить, чтобы енопка confirm активировалась, только при всех корректно заполненных полях
     private void validateFields() {
-        boolean allValid = true;
+        Integer allValid = 0;
 
         // Проверяем каждое поле
         JTextField[] fields = {heightField, widthField, bombsField};
@@ -91,14 +93,14 @@ public class Settings extends JFrame {
             String text = field.getText();
             // Проверяем, что строка состоит только из цифр и не более 4 символов
             if (text.length() > 4 || !text.matches("\\d*")) {
-                allValid = false;
                 break;
+            }else{
+                allValid++;
             }
         }
 
-        // Включаем кнопку, если все поля корректно заполнены
-        if (allValid) {
-            confirm.setEnabled(allValid);
+        if (allValid == 3) {
+            confirm.setEnabled(true);
         }
     }
 }

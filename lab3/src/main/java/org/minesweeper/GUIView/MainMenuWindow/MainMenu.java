@@ -1,4 +1,4 @@
-package org.minesweeper.GUIView;
+package org.minesweeper.GUIView.MainMenuWindow;
 
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;

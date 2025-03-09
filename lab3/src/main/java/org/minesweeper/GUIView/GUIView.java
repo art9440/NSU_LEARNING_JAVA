@@ -1,10 +1,15 @@
 package org.minesweeper.GUIView;
 
+import org.minesweeper.GUIView.AboutWindow.About;
+import org.minesweeper.GUIView.AboutWindow.AboutText;
+import org.minesweeper.GUIView.HighScoresWindow.HighScores;
+import org.minesweeper.GUIView.HighScoresWindow.HighScoresText;
+import org.minesweeper.GUIView.MainMenuWindow.MainMenu;
+import org.minesweeper.GUIView.SettingsWindow.Settings;
 import org.minesweeper.game.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 public class GUIView {
     private GameModel model;

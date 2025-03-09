@@ -1,4 +1,4 @@
-package org.minesweeper.GUIView;
+package org.minesweeper.GUIView.AboutWindow;
 
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
@@ -6,7 +6,6 @@ import org.minesweeper.game.GameModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Objects;
 
 public class About extends JFrame{
     private JPanel buttonsPanel;

@@ -11,6 +11,9 @@ public class GameModel {
     private Integer fieldWidth;
     private Integer fieldHeight;
     private Integer bombsAmount;
+    private Integer[][] mines;
+    private boolean[][] flags;
+    private boolean[][] revealed;
 
 
     public GameModel(String gameMode){
@@ -29,6 +32,7 @@ public class GameModel {
 
 
     public void launchGame(){
-
+        //хранить все данные о нынешней сессии буду в двумерном массиве.
+        //Бомбы раскидываются случайно после первого выбора игрока. До этого их нигде нет.
     }
 }

@@ -1,13 +1,13 @@
 package org.minesweeper.controller;
 
 import org.minesweeper.GUIView.GUIView;
-import org.minesweeper.GUIView.HighScores;
-import org.minesweeper.GUIView.MainMenu;
+import org.minesweeper.GUIView.SettingsWindow.TextFieldProvider;
 import org.minesweeper.game.GameModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class ButtonsListener implements ActionListener {
     private GameModel model;
@@ -45,6 +45,12 @@ public class ButtonsListener implements ActionListener {
                 view.showMainMenu();
             }
             case "Confirm Settings" -> {
+                if (view instanceof TextFieldProvider){
+                    String[] settings = ((TextFieldProvider) view).getTextField();
+                    System.out.println(Arrays.toString(settings));
+                }
+                view.dispose();
+                //далее происходит передача параметров в setSettings
                 //int h =
                 //model.setSettings();
             }
