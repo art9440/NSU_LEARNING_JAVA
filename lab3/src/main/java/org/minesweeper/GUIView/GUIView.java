@@ -5,6 +5,7 @@ import org.minesweeper.GUIView.AboutWindow.AboutText;
 import org.minesweeper.GUIView.HighScoresWindow.HighScores;
 import org.minesweeper.GUIView.HighScoresWindow.HighScoresText;
 import org.minesweeper.GUIView.MainMenuWindow.MainMenu;
+import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
 import org.minesweeper.GUIView.SettingsWindow.Settings;
 import org.minesweeper.game.GameModel;
 
@@ -23,7 +24,7 @@ public class GUIView {
         mainMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainMenu.setResizable(false);
         mainMenu.setVisible(true);
-        mainMenu.setMinimumSize(new Dimension(400, 300));
+        mainMenu.setMinimumSize(new Dimension(300, 400));
     }
 
     public void showAbout(){
@@ -43,7 +44,7 @@ public class GUIView {
         highScores.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         highScores.setResizable(true);
         highScores.setVisible(true);
-        highScores.setMinimumSize(new Dimension(400, 300));
+        highScores.setMinimumSize(new Dimension(300, 400));
     }
 
     public void showSettings(){
@@ -52,5 +53,15 @@ public class GUIView {
         settings.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         settings.setResizable(false);
         settings.setVisible(true);
+    }
+
+    public void showGame(){
+        SwingUtilities.invokeLater(() -> {
+            MinesWeeper minesWeeper = new MinesWeeper("Mines Weeper", model.getFieldHeight() * 50, model.getFieldWidth() * 50);
+            minesWeeper.initWindow(model);
+            minesWeeper.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            minesWeeper.setResizable(false);
+            minesWeeper.setVisible(true);
+        });
     }
 }

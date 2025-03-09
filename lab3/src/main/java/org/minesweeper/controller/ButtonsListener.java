@@ -1,6 +1,8 @@
 package org.minesweeper.controller;
 
 import org.minesweeper.GUIView.GUIView;
+import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
+import org.minesweeper.GUIView.MinesWeeperWindow.PauseDialog;
 import org.minesweeper.GUIView.SettingsWindow.TextFieldProvider;
 import org.minesweeper.game.GameModel;
 
@@ -37,7 +39,6 @@ public class ButtonsListener implements ActionListener {
                 view.dispose();
                 GUIView view = new GUIView(model);
                 view.showSettings();
-                model.launchGame();
             }
             case "Back to menu" -> {
                 view.dispose();
@@ -48,15 +49,20 @@ public class ButtonsListener implements ActionListener {
                 if (view instanceof TextFieldProvider){
                     String[] settings = ((TextFieldProvider) view).getTextField();
                     System.out.println(Arrays.toString(settings));
+                    model.setSettings(Integer.parseInt(settings[0]), Integer.parseInt(settings[1]), Integer.parseInt(settings[2]));
                 }
                 view.dispose();
-                //далее происходит передача параметров в setSettings
-                //int h =
-                //model.setSettings();
+                model.launchGame();
             }
             case "Default Settings" -> {
                 view.dispose();
                 model.setSettings(9, 9, 10);
+                model.launchGame();
+            }
+            case "Pause Game" -> {
+                if (view instanceof MinesWeeper){
+                    ((PauseDialog) view).showPause();
+                }
             }
         }
     }

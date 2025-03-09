@@ -29,7 +29,8 @@
         <resource>
             <directory>src/main/resources</directory>
             <includes>
-                <include>**/*.txt</include>  <!-- Копируем все .txt файлы -->
+                <include>**/*.txt</include>
+                <include>**/*.png</include><!-- Копируем все .txt файлы -->
             </includes>
         </resource>
     </resources>
