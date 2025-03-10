@@ -23,10 +23,10 @@ public class MouseListener extends MouseAdapter {
         int x = button.getXCoord();
         int y = button.getYCoord();
         if (SwingUtilities.isLeftMouseButton(e)) {
-            openCell(button, x, y);
+            openCell(button, x, y); //раскрытие клетки и соседей
         }
         else if(SwingUtilities.isRightMouseButton(e)){
-
+            //установка флага
         }
     }
 

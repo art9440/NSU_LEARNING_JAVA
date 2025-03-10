@@ -32,7 +32,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
     public void initWindow(GameModel model){
         topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
+        //в этот topPanel в середину добавить время, которое считается отдельным потоком и в правый край, счет установленных флагов
         buttonsListener = new ButtonsListener(model, this);
 
         //Кнопка паузы
