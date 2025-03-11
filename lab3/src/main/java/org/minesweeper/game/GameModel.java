@@ -68,8 +68,21 @@ public class GameModel {
         return false;
     }
 
+    public void changeFlag(int x, int y){
+        if (flags[x][y]){
+            flags[x][y] = false;
+        }
+        else{
+            flags[x][y] = true;
+        }
+    }
+
     public boolean isRevealed(int x, int y){
         return revealed[x][y];
+    }
+
+    public void notRevealed(int x, int y){
+        revealed[x][y] = false;
     }
 
     private void plantBombs(){

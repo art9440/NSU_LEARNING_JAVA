@@ -87,7 +87,19 @@ public class MouseListener extends MouseAdapter {
     }
 
     private void handleRightClick(int x, int y){
+        if(model.isFlagged(x, y)){
+            view.updateButton("images/none.png", x, y);
+            model.changeFlag(x, y);
+            model.notRevealed(x, y);
+        }
+        else if (!model.isRevealed(x, y)){
+            view.updateButton("images/flag.png", x, y);
+            model.changeFlag(x, y);
+            if(model.isBomb(x, y)){
+                model.revealCell(x, y);
+            }
 
+        }
     }
 
 }

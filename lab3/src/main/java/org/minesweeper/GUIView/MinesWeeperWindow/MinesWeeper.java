@@ -49,7 +49,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         gamePanel = new JPanel(new GridLayout(h, w));
         fieldButtons = new FieldButton[h][w];
         MouseListener mouseListener = new MouseListener(model, this);
-        origImg = loadImg("images/0.png");
+        origImg = loadImg("images/none.png");
         for(int i = 0; i < h; i++){
             for(int j = 0; j < w; j++){
                 fieldButtons[i][j] = new FieldButton(i, j);
@@ -152,8 +152,11 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     public void updateButton(String path, int x, int y){
         FieldButton button = fieldButtons[x][y];
         setButtonIcon(button, path);
-        button.setEnabled(false);
-        button.setDisabledIcon(button.getIcon());
+        if (!path.equals("images/flag.png") && !path.equals("images/none.png")) {
+            button.setEnabled(false);
+            button.setDisabledIcon(button.getIcon());
+        }
+
 
     }
 
