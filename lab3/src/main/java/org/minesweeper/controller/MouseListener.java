@@ -1,5 +1,6 @@
 package org.minesweeper.controller;
 
+import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.GUIView.MinesWeeperWindow.FieldButton;
 import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
 import org.minesweeper.game.GameModel;
@@ -23,16 +24,70 @@ public class MouseListener extends MouseAdapter {
         int x = button.getXCoord();
         int y = button.getYCoord();
         if (SwingUtilities.isLeftMouseButton(e)) {
-            openCell(button, x, y); //раскрытие клетки и соседей
+           handleLeftClick(x, y); //раскрытие клетки и соседей
         }
         else if(SwingUtilities.isRightMouseButton(e)){
-            //установка флага
+            handleRightClick(x, y);
         }
     }
 
-    private void openCell(FieldButton button, int x, int y){
-        if(model.checkBomb(x, y)) {
+    private void handleLeftClick(int x, int y){
+        if(model.isFlagged(x, y)) return;
 
+        model.revealCell(x, y);
+
+        if(model.isBomb(x, y)){
+            view.updateButton("images/bomb.png", x, y);
+            view.showFailedGameDialog();
+        }
+        else{
+            int count = model.countNearBombs(x, y);
+            if (count > 0){
+                view.updateButton("images/" + count + ".png", x, y);
+            }
+            else{
+                view.updateButton("images/0.png", x, y);
+
+                openCells(x, y, model);
+            }
+        }
+
+    }
+
+    private void openCells(int x, int y, GameModel model){
+        System.out.println("Открываем клетку: (" + x + ", " + y + ")");
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int nx = x + dx, ny = y + dy;
+
+                System.out.println("Проверяем соседнюю клетку: (" + nx + ", " + ny + ")");
+
+                if(nx >= 0 && ny >= 0 && nx < model.getFieldWidth() && ny < model.getFieldHeight()) {
+
+                    if (model.isRevealed(nx, ny) || model.isFlagged(nx, ny)) continue;
+
+                    if (model.isBomb(nx, ny)) continue;
+
+                    model.revealCell(nx, ny);
+                    int bombCount = model.countNearBombs(nx, ny);
+
+                    System.out.println("Количество соседних бомб для клетки (" + nx + ", " + ny + "): " + bombCount);
+
+
+                    if (bombCount > 0) {
+                        view.updateButton("images/" + bombCount + ".png", nx, ny);
+                    } else {
+                        view.updateButton("images/0.png", nx, ny);
+                        openCells(nx, ny, model);
+                    }
+                }
+            }
         }
     }
+
+    private void handleRightClick(int x, int y){
+
+    }
+
 }

@@ -64,6 +64,10 @@ public class ButtonsListener implements ActionListener {
                     ((PauseDialog) view).showPause();
                 }
             }
+            case "Restart Game" -> {
+                view.dispose();
+                model.launchGame();
+            }
         }
     }
 }

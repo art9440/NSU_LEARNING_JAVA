@@ -48,6 +48,30 @@ public class GameModel {
         return (int) (Math.random() * fieldHeight);
     }
 
+    public boolean isBomb(int x, int y){
+        if (bombs[x][y] == 1){
+            return true;
+        }
+        return false;
+    }
+
+    public void revealCell(int x, int y){
+        revealed[x][y] = true;
+    }
+
+
+    public boolean isFlagged(int x, int y){
+        if (flags[x][y]){
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isRevealed(int x, int y){
+        return revealed[x][y];
+    }
+
     private void plantBombs(){
         int placedBombs = 0;
         while (placedBombs < bombsAmount) {
@@ -87,4 +111,20 @@ public class GameModel {
         //Если флаг и бомба - true, то устанавливаем true где-то и уменьшаем количество оставшихся бомб. Если флаг убирается, соответственно меняем
         //
     }
+
+    public int countNearBombs(int x, int y){
+        int count = 0;
+        for (int dx = -1; dx <= 1; dx ++){
+            for (int dy = -1; dy <= 1; dy ++){
+                int nx = x + dx, ny = y + dy;
+                if(nx >= 0 && ny >= 0 && nx < fieldWidth && ny < fieldHeight){
+                    if (bombs[nx][ny] == 1){
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
 }

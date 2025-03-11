@@ -12,6 +12,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MinesWeeper extends JFrame implements PauseDialog{
     private final int width, height;
@@ -81,7 +82,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
     private BufferedImage loadImg(String path) {
         try {
-            return ImageIO.read(getClass().getClassLoader().getResource(path));
+            return ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource(path)));
         } catch (IOException | NullPointerException e) {
             System.err.println("Ошибка загрузки изображения: " + path);
             return null;
@@ -123,9 +124,51 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         pauseDialog.setVisible(true);
     }
 
+    public void showFailedGameDialog(){
+        JDialog failedGame = new JDialog(this, "Failed game", true);
+        failedGame.setSize(250, 150);
+        failedGame.setLayout(new GridLayout(2, 1));
+        failedGame.setLocationRelativeTo(this);
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setActionCommand("Restart Game");
+        restartButton.addActionListener(buttonsListener);
+
+        JButton mainMenuButton = new JButton("Main Menu");
+        mainMenuButton.setActionCommand("Back to menu");
+        mainMenuButton.addActionListener(buttonsListener);
+
+        failedGame.add(restartButton);
+        failedGame.add(mainMenuButton);
+
+        failedGame.setVisible(true);
+
+    }
+
     public FieldButton getFieldButton(int x, int y) {
         return fieldButtons[x][y];
     }
+
+    public void updateButton(String path, int x, int y){
+        FieldButton button = fieldButtons[x][y];
+        setButtonIcon(button, path);
+        button.setEnabled(false);
+        button.setDisabledIcon(button.getIcon());
+
+    }
+
+    private void setButtonIcon(FieldButton button, String path){
+        try {
+            BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource(path)));
+            if (img != null) {
+                ImageIcon icon = new ImageIcon(img.getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_SMOOTH));
+                button.setIcon(icon);
+            }
+        } catch (IOException | NullPointerException e) {
+            System.err.println("Ошибка загрузки изображения: " + path);
+        }
+    }
+
 
 
 
