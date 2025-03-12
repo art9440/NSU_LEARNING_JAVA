@@ -9,6 +9,7 @@ public class GameModel {
     private Integer fieldWidth;
     private Integer fieldHeight;
     private Integer bombsAmount;
+    public Integer bombsCount;
     private Integer[][] bombs;
     private boolean[][] flags; // где стоят флаги
     private boolean[][] revealed; //правильно раскрытые бомбы
@@ -48,11 +49,20 @@ public class GameModel {
         return (int) (Math.random() * fieldHeight);
     }
 
+
     public boolean isBomb(int x, int y){
         if (bombs[x][y] == 1){
             return true;
         }
         return false;
+    }
+
+    public void bombsCountChange(int change){
+        bombsCount += change;
+    }
+
+    public Integer getBombsCount(){
+        return bombsCount;
     }
 
     public void revealCell(int x, int y){
@@ -107,6 +117,7 @@ public class GameModel {
 
     public void launchGame(){
         bombs = new Integer[fieldHeight][fieldWidth];
+        bombsCount = bombsAmount;
         for (int i = 0; i < fieldHeight; i++){
             Arrays.fill(bombs[i], 0);
         }
@@ -138,6 +149,10 @@ public class GameModel {
             }
         }
         return count;
+    }
+
+    public boolean checkVictory(){
+        return bombsCount == 0;
     }
 
 }

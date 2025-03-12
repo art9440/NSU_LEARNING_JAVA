@@ -22,6 +22,8 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     private FieldButton[][] fieldButtons;
     private int h, w;
     private BufferedImage origImg;
+    private int bombsRemaining;
+    private JLabel bombsCounterLabel;
 
     public MinesWeeper(String winTitle, int w, int h){
         super(winTitle);
@@ -32,9 +34,13 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     }
 
     public void initWindow(GameModel model){
+        bombsRemaining = model.getBombsCount();
         topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         //в этот topPanel в середину добавить время, которое считается отдельным потоком и в правый край, счет установленных флагов
         buttonsListener = new ButtonsListener(model, this);
+
+        bombsCounterLabel = new JLabel("Bombs: " + bombsRemaining);
+        topPanel.add(bombsCounterLabel);
 
         //Кнопка паузы
         pause = new JButton("pause");
@@ -110,6 +116,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         pauseDialog.setSize(250, 150);
         pauseDialog.setLayout(new GridLayout(2, 1));
         pauseDialog.setLocationRelativeTo(this);
+        pauseDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         JButton resumeButton = new JButton("Resume");
         resumeButton.addActionListener(e -> pauseDialog.dispose());
@@ -129,6 +136,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         failedGame.setSize(250, 150);
         failedGame.setLayout(new GridLayout(2, 1));
         failedGame.setLocationRelativeTo(this);
+        failedGame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         JButton restartButton = new JButton("Restart");
         restartButton.setActionCommand("Restart Game");
@@ -170,6 +178,21 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         } catch (IOException | NullPointerException e) {
             System.err.println("Ошибка загрузки изображения: " + path);
         }
+    }
+
+    public void updateBombsCounter(int update){
+        bombsRemaining += update;
+        bombsCounterLabel.setText("Bombs: " + bombsRemaining);
+    }
+
+    public void showVictory(){
+        JDialog victoryDialog = new JDialog(this, "Victory", true);
+        victoryDialog.setSize(250, 150);
+        victoryDialog.setLayout(new GridLayout(2, 1));
+        victoryDialog.setLocationRelativeTo(this);
+        victoryDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+
     }
 
 

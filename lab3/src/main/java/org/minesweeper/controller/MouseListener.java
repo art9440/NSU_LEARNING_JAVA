@@ -91,14 +91,22 @@ public class MouseListener extends MouseAdapter {
             view.updateButton("images/none.png", x, y);
             model.changeFlag(x, y);
             model.notRevealed(x, y);
+            if(model.isBomb(x, y)){
+                model.bombsCountChange(1);
+            }
+            view.updateBombsCounter(1);
         }
         else if (!model.isRevealed(x, y)){
             view.updateButton("images/flag.png", x, y);
             model.changeFlag(x, y);
             if(model.isBomb(x, y)){
                 model.revealCell(x, y);
+                model.bombsCountChange(-1);
             }
-
+            view.updateBombsCounter(-1);
+            if(model.checkVictory()){
+                view.showVictory();
+            }
         }
     }
 
