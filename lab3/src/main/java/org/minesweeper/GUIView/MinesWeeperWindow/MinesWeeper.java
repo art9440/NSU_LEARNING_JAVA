@@ -15,12 +15,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class MinesWeeper extends JFrame implements PauseDialog{
-    private final int width, height;
     private ActionListener buttonsListener;
-    private JPanel topPanel, gamePanel;
-    private JButton pause;
     private FieldButton[][] fieldButtons;
-    private int h, w;
     private int hField, wField;
     private BufferedImage origImg;
     private int bombsRemaining;
@@ -30,16 +26,14 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
     public MinesWeeper(String winTitle, int h, int w){
         super(winTitle);
-        width = w;
-        height = h;
 
-        setSize(width, height);
+        setSize(w, h);
     }
 
     public void initWindow(GameModel model){
         this.model = model;
         bombsRemaining = model.getBombsCount();
-        topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         //в этот topPanel в середину добавить время, которое считается отдельным потоком и в правый край, счет установленных флагов
         buttonsListener = new ButtonsListener(model, this);
 
@@ -49,7 +43,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         model.addTimeListener(this::updateTimerLabel);
 
         //Pause button
-        pause = new JButton("pause");
+        JButton pause = new JButton("pause");
         pause.setActionCommand("Pause Game");
         pause.addActionListener(buttonsListener);
         topPanel.add(pause);
@@ -63,7 +57,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         //Initialization field
         hField = model.getFieldHeight();
         wField = model.getFieldWidth();
-        gamePanel = new JPanel(new GridLayout(hField, wField));
+        JPanel gamePanel = new JPanel(new GridLayout(hField, wField));
         gamePanel.setPreferredSize(new Dimension(wField * 30, hField * 30)); // Фиксируем размер поля
         gamePanel.setMaximumSize(gamePanel.getPreferredSize());
         gamePanel.setMinimumSize(gamePanel.getPreferredSize());
@@ -76,9 +70,9 @@ public class MinesWeeper extends JFrame implements PauseDialog{
             for(int j = 0; j < wField; j++){
                 fieldButtons[i][j] = new FieldButton(i, j);
                 fieldButtons[i][j].setPreferredSize(new Dimension(30, 30));
-                if (model.checkBomb(i, j)) {
-                    fieldButtons[i][j].setBomb(true);
-                }
+                //if (model.checkBomb(i, j)) {
+                    //fieldButtons[i][j].setBomb(true);
+                //}
 
                 fieldButtons[i][j].addMouseListener(mouseListener);
                 gamePanel.add(fieldButtons[i][j]);
@@ -180,9 +174,6 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
     }
 
-    public FieldButton getFieldButton(int x, int y) {
-        return fieldButtons[x][y];
-    }
 
     public void updateButton(String path, int x, int y){
         FieldButton button = fieldButtons[x][y];
@@ -261,6 +252,8 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         });
     }
 
-
+    public int getBombsRemaining(){
+        return bombsRemaining;
+    }
 
 }

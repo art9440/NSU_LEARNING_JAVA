@@ -9,11 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class Settings extends JFrame implements TextFieldProvider{
-    private JPanel panel;
-    private BoxLayout boxLayoutButtons, boxLayoutText;
-    private JButton backToMenu, confirm, defaultB;
-    private final int width, height;
-    private ActionListener buttonsListener;
+    private JButton confirm;
     private JTextField heightField, widthField, bombsField;
 
     public String[] getTextField(){
@@ -22,25 +18,21 @@ public class Settings extends JFrame implements TextFieldProvider{
 
     public Settings(String winTitle, int w, int h){
         super(winTitle);
-        width = w;
-        height = h;
 
-        setSize(width, height);
+        setSize(w, h);
     }
 
     public void initWindow(GameModel model){
-        panel = new JPanel(new VerticalLayout());
-        buttonsListener = new ButtonsListener(model, this);
+        JPanel panel = new JPanel(new VerticalLayout());
+        ActionListener buttonsListener = new ButtonsListener(model, this);
 
 
-
-
-        backToMenu = new JButton("Back");
+        JButton backToMenu = new JButton("Back");
 
         confirm = new JButton("Confirm");
         confirm.setEnabled(false);
 
-        defaultB = new JButton("Default");
+        JButton defaultB = new JButton("Default");
 
         panel.add(backToMenu);
 
@@ -83,24 +75,30 @@ public class Settings extends JFrame implements TextFieldProvider{
         getContentPane().add(panel);
 
     }
-//нужно починить, чтобы енопка confirm активировалась, только при всех корректно заполненных полях
+//нужно починить, чтобы кнопка confirm активировалась, только при всех корректно заполненных полях
     private void validateFields() {
-        Integer allValid = 0;
+        String heightText = heightField.getText().trim();
+        String widthText = widthField.getText().trim();
+        String bombsText = bombsField.getText().trim();
 
-        // Проверяем каждое поле
-        JTextField[] fields = {heightField, widthField, bombsField};
-        for (JTextField field : fields) {
-            String text = field.getText();
-            // Проверяем, что строка состоит только из цифр и не более 4 символов
-            if (text.length() > 4 || !text.matches("\\d*")) {
-                break;
-            }else{
-                allValid++;
-            }
+        // Проверяем, что все поля содержат только цифры и не превышают 4 символа
+        if (!heightText.matches("\\d{1,4}") || !widthText.matches("\\d{1,4}") || !bombsText.matches("\\d{1,4}")) {
+            confirm.setEnabled(false);
+            return;
         }
 
-        if (allValid == 3) {
-            confirm.setEnabled(true);
+        // Преобразуем в числа
+        int height = Integer.parseInt(heightText);
+        int width = Integer.parseInt(widthText);
+        int bombs = Integer.parseInt(bombsText);
+
+        // Проверяем, что количество бомб не превышает общее количество клеток
+        if (bombs > height * width) {
+            confirm.setEnabled(false);
+            return;
         }
+
+        // Если все проверки пройдены, активируем кнопку
+        confirm.setEnabled(true);
     }
 }

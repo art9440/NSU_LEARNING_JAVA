@@ -8,36 +8,26 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public class MainMenu extends JFrame{
-    private String iconPath;
-    private ImageIcon iconFile;
-    private JPanel buttonsPanel;
-    private BoxLayout boxLayout;
-    private JButton newGame, about, highScores, exit;
-    private final int width, height;
-    private ActionListener buttonsListener;
 
 
     public MainMenu(String winTitle, String path, int w, int h){
         super(winTitle);
-        iconPath = path;
-        width = w;
-        height = h;
 
-        setSize(width, height);
+        setSize(w, h);
 
 
     }
 
     public void initWindow(GameModel model){
-        buttonsPanel = new JPanel();
-        buttonsListener = new ButtonsListener(model, this);
-        boxLayout = new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS);
+        JPanel buttonsPanel = new JPanel();
+        ActionListener buttonsListener = new ButtonsListener(model, this);
+        BoxLayout boxLayout = new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS);
         buttonsPanel.setLayout(boxLayout);
 
-        newGame = new JButton("New Game");
-        about = new JButton("About");
-        highScores = new JButton(("High Scores"));
-        exit = new JButton("Exit");
+        JButton newGame = new JButton("New Game");
+        JButton about = new JButton("About");
+        JButton highScores = new JButton(("High Scores"));
+        JButton exit = new JButton("Exit");
 
         newGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         about.setAlignmentX(Component.CENTER_ALIGNMENT);

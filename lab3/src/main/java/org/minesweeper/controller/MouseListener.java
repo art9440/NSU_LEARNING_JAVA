@@ -10,8 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MouseListener extends MouseAdapter {
-    private GameModel model;
-    private MinesWeeper view;
+    private final GameModel model;
+    private final MinesWeeper view;
 
     public MouseListener(GameModel model, MinesWeeper view){
         this.model = model;
@@ -32,7 +32,6 @@ public class MouseListener extends MouseAdapter {
     }
 
     private void handleLeftClick(int x, int y){
-        System.out.println("Size of field" + model.getFieldHeight() + "," + model.getFieldWidth());
         if(model.isFlagged(x, y)) return;
 
         model.revealCell(x, y);
@@ -57,13 +56,11 @@ public class MouseListener extends MouseAdapter {
     }
 
     private void openCells(int x, int y, GameModel model){
-        System.out.println("Открываем клетку: (" + x + ", " + y + ")");
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int nx = x + dx, ny = y + dy;
 
-                System.out.println("Проверяем соседнюю клетку: (" + nx + ", " + ny + ")");
 
                 if(nx >= 0 && ny >= 0 && nx < model.getFieldHeight() && ny < model.getFieldWidth()) {
 
@@ -73,8 +70,6 @@ public class MouseListener extends MouseAdapter {
 
                     model.revealCell(nx, ny);
                     int bombCount = model.countNearBombs(nx, ny);
-
-                    System.out.println("Количество соседних бомб для клетки (" + nx + ", " + ny + "): " + bombCount);
 
 
                     if (bombCount > 0) {
@@ -106,7 +101,7 @@ public class MouseListener extends MouseAdapter {
                 model.bombsCountChange(-1);
             }
             view.updateBombsCounter(-1);
-            if(model.checkVictory()){
+            if(model.checkVictory() && view.getBombsRemaining() == 0){
                 view.showVictory();
             }
         }

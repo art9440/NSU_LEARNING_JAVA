@@ -12,8 +12,8 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 
 public class ButtonsListener implements ActionListener {
-    private GameModel model;
-    private JFrame view;
+    private final GameModel model;
+    private final JFrame view;
 
     public ButtonsListener(GameModel model, JFrame view){
         this.model = model;

@@ -1,17 +1,14 @@
 package org.minesweeper.game;
 
 import org.minesweeper.GUIView.GUIView;
-
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,9 +39,6 @@ public class GameModel {
         return fieldHeight;
     }
 
-    public Integer getBombsAmount(){
-        return bombsAmount;
-    }
 
     public void setSettings(Integer height, Integer width, Integer bombs){
         this.fieldHeight = height;
@@ -66,10 +60,7 @@ public class GameModel {
 
 
     public boolean isBomb(int x, int y){
-        if (bombs[x][y] == 1){
-            return true;
-        }
-        return false;
+        return bombs[x][y] == 1;
     }
 
     public void bombsCountChange(int change){
@@ -86,20 +77,11 @@ public class GameModel {
 
 
     public boolean isFlagged(int x, int y){
-        if (flags[x][y]){
-            return true;
-        }
-
-        return false;
+        return flags[x][y];
     }
 
     public void changeFlag(int x, int y){
-        if (flags[x][y]){
-            flags[x][y] = false;
-        }
-        else{
-            flags[x][y] = true;
-        }
+        flags[x][y] = !flags[x][y];
     }
 
     public boolean isRevealed(int x, int y){
@@ -126,9 +108,6 @@ public class GameModel {
         }
     }
 
-    public boolean checkBomb(int x, int y){
-        return bombs[x][y] == 1;
-    }
 
     public void launchGame(){
         bombs = new Integer[fieldHeight][fieldWidth];
@@ -198,9 +177,9 @@ public class GameModel {
 
     public void addToHighScores(String name, Integer time) {
         Path path = Paths.get("highScores.csv");
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            writer.newLine();
             writer.write(name + "," + time + "," + this.fieldHeight + "," + this.fieldWidth);
-
         }catch (IOException e){
             System.err.println("Error when writing to CSV: " + e.getMessage());
         }
