@@ -57,10 +57,10 @@ public class GUIView {
 
     public void showGame(){
         SwingUtilities.invokeLater(() -> {
-            MinesWeeper minesWeeper = new MinesWeeper("Mines Weeper", model.getFieldHeight() * 50, model.getFieldWidth() * 50);
+            MinesWeeper minesWeeper = new MinesWeeper("Mines Weeper", model.getFieldHeight() * 40, model.getFieldWidth() * 40);
             minesWeeper.initWindow(model);
             minesWeeper.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            minesWeeper.setResizable(false);
+            minesWeeper.setResizable(true);
             minesWeeper.setVisible(true);
         });
     }

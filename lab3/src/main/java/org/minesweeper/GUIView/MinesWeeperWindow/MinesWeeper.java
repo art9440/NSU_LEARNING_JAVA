@@ -21,11 +21,14 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     private JButton pause;
     private FieldButton[][] fieldButtons;
     private int h, w;
+    private int hField, wField;
     private BufferedImage origImg;
     private int bombsRemaining;
     private JLabel bombsCounterLabel;
+    private JLabel timerLabel;
+    private GameModel model;
 
-    public MinesWeeper(String winTitle, int w, int h){
+    public MinesWeeper(String winTitle, int h, int w){
         super(winTitle);
         width = w;
         height = h;
@@ -34,31 +37,45 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     }
 
     public void initWindow(GameModel model){
+        this.model = model;
         bombsRemaining = model.getBombsCount();
-        topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         //в этот topPanel в середину добавить время, которое считается отдельным потоком и в правый край, счет установленных флагов
         buttonsListener = new ButtonsListener(model, this);
 
-        bombsCounterLabel = new JLabel("Bombs: " + bombsRemaining);
-        topPanel.add(bombsCounterLabel);
+        timerLabel = new JLabel("");
+        topPanel.add(timerLabel);
 
-        //Кнопка паузы
+        model.addTimeListener(this::updateTimerLabel);
+
+        //Pause button
         pause = new JButton("pause");
         pause.setActionCommand("Pause Game");
         pause.addActionListener(buttonsListener);
         topPanel.add(pause);
+
+        //Counter of bombs
+        bombsCounterLabel = new JLabel("Bombs: " + bombsRemaining);
+        topPanel.add(bombsCounterLabel);
+
         add(topPanel, BorderLayout.NORTH);
 
         //Initialization field
-        h = model.getFieldHeight();
-        w = model.getFieldWidth();
-        gamePanel = new JPanel(new GridLayout(h, w));
-        fieldButtons = new FieldButton[h][w];
+        hField = model.getFieldHeight();
+        wField = model.getFieldWidth();
+        gamePanel = new JPanel(new GridLayout(hField, wField));
+        gamePanel.setPreferredSize(new Dimension(wField * 30, hField * 30)); // Фиксируем размер поля
+        gamePanel.setMaximumSize(gamePanel.getPreferredSize());
+        gamePanel.setMinimumSize(gamePanel.getPreferredSize());
+
+        //making field of mine sweeper
+        fieldButtons = new FieldButton[hField][wField];
         MouseListener mouseListener = new MouseListener(model, this);
         origImg = loadImg("images/none.png");
-        for(int i = 0; i < h; i++){
-            for(int j = 0; j < w; j++){
+        for(int i = 0; i < hField; i++){
+            for(int j = 0; j < wField; j++){
                 fieldButtons[i][j] = new FieldButton(i, j);
+                fieldButtons[i][j].setPreferredSize(new Dimension(30, 30));
                 if (model.checkBomb(i, j)) {
                     fieldButtons[i][j].setBomb(true);
                 }
@@ -68,11 +85,19 @@ public class MinesWeeper extends JFrame implements PauseDialog{
             }
         }
 
+        model.startTimer();
 
-        JPanel containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 20px отступ со всех сторон
-        containerPanel.add(gamePanel, BorderLayout.CENTER);
 
+        JPanel containerPanel = new JPanel(new GridBagLayout());
+        containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        containerPanel.add(gamePanel, gbc);
         add(containerPanel, BorderLayout.CENTER);
 
         addComponentListener(new ComponentAdapter() {
@@ -94,10 +119,10 @@ public class MinesWeeper extends JFrame implements PauseDialog{
             return null;
         }
     }
-
+    //resizing icon of cell
     private void updateButtonIcons() {
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
+        for (int i = 0; i < hField; i++) {
+            for (int j = 0; j < wField; j++) {
                 JButton button = fieldButtons[i][j];
                 int width = button.getWidth();
                 int height = button.getHeight();
@@ -119,10 +144,12 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         pauseDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         JButton resumeButton = new JButton("Resume");
-        resumeButton.addActionListener(e -> pauseDialog.dispose());
+        resumeButton.addActionListener(e -> {pauseDialog.dispose();
+                                                        model.resumeTimer();
+                                                        });
 
         JButton mainMenuButton = new JButton("Main Menu");
-        mainMenuButton.setActionCommand("Back to menu");
+        mainMenuButton.setActionCommand("Back to menu from Game");
         mainMenuButton.addActionListener(buttonsListener);
 
         pauseDialog.add(resumeButton);
@@ -185,16 +212,54 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         bombsCounterLabel.setText("Bombs: " + bombsRemaining);
     }
 
+
     public void showVictory(){
-        JDialog victoryDialog = new JDialog(this, "Victory", true);
-        victoryDialog.setSize(250, 150);
-        victoryDialog.setLayout(new GridLayout(2, 1));
-        victoryDialog.setLocationRelativeTo(this);
-        victoryDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        model.stopTimer();
+        int time = model.getElapsedTime();
 
+        int minutes = time / 60;
+        int seconds = time % 60;
 
+        // Создаем текстовое поле для ввода имени
+        JTextField nameField = new JTextField();
+
+        // Создаем панель для JOptionPane (чтобы разместить текст и поле ввода)
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("You have Won!!"));
+        panel.add(new JLabel(String.format("Your time: %02d:%02d", minutes, seconds)));
+        panel.add(new JLabel("Write your name:"));
+        panel.add(nameField);
+
+        // Создаем кнопки Confirm и Cancel
+        String[] options = {"Confirm", "Cancel"};
+        int result = JOptionPane.showOptionDialog(
+                this, // Родительское окно
+                panel, // Контент (текст + поле ввода)
+                "Win!", // Заголовок окна
+                JOptionPane.DEFAULT_OPTION, // Тип диалогового окна
+                JOptionPane.INFORMATION_MESSAGE, // Иконка
+                null, // Кастомная иконка (null = стандартная)
+                options, // Кнопки
+                options[0] // Кнопка по умолчанию
+        );
+
+        if (result == 0){
+            model.addToHighScores(nameField.getText().trim(), time);
+            this.dispose();
+
+        }
     }
 
+
+    public void updateTimerLabel() {
+        SwingUtilities.invokeLater(() -> {
+            int time = model.getElapsedTime();
+            int minutes = time / 60;
+            int seconds = time % 60;
+            timerLabel.setText(String.format("Время: %02d:%02d", minutes, seconds));
+        });
+    }
 
 
 

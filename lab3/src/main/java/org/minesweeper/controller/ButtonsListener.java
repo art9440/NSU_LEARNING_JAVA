@@ -40,6 +40,12 @@ public class ButtonsListener implements ActionListener {
                 GUIView view = new GUIView(model);
                 view.showSettings();
             }
+            case "Back to menu from Game" -> {
+                view.dispose();
+                model.stopTimer();
+                GUIView view = new GUIView(model);
+                view.showMainMenu();
+            }
             case "Back to menu" -> {
                 view.dispose();
                 GUIView view = new GUIView(model);
@@ -61,11 +67,13 @@ public class ButtonsListener implements ActionListener {
             }
             case "Pause Game" -> {
                 if (view instanceof MinesWeeper){
+                    model.stopTimer();
                     ((PauseDialog) view).showPause();
                 }
             }
             case "Restart Game" -> {
                 view.dispose();
+                model.stopTimer();
                 model.launchGame();
             }
         }

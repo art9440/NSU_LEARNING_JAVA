@@ -32,12 +32,14 @@ public class MouseListener extends MouseAdapter {
     }
 
     private void handleLeftClick(int x, int y){
+        System.out.println("Size of field" + model.getFieldHeight() + "," + model.getFieldWidth());
         if(model.isFlagged(x, y)) return;
 
         model.revealCell(x, y);
 
         if(model.isBomb(x, y)){
             view.updateButton("images/bomb.png", x, y);
+            model.stopTimer();
             view.showFailedGameDialog();
         }
         else{
@@ -63,7 +65,7 @@ public class MouseListener extends MouseAdapter {
 
                 System.out.println("Проверяем соседнюю клетку: (" + nx + ", " + ny + ")");
 
-                if(nx >= 0 && ny >= 0 && nx < model.getFieldWidth() && ny < model.getFieldHeight()) {
+                if(nx >= 0 && ny >= 0 && nx < model.getFieldHeight() && ny < model.getFieldWidth()) {
 
                     if (model.isRevealed(nx, ny) || model.isFlagged(nx, ny)) continue;
 
