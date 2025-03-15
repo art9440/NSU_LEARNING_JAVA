@@ -16,6 +16,8 @@ public class GUIView {
     public GUIView(GameModel model){
         this.model = model;
     }
+
+
     public void showMainMenu(){
         MainMenu mainMenu = new MainMenu("MinesWeeper", "../images/icon.png", 300, 300);
         mainMenu.initWindow(model);

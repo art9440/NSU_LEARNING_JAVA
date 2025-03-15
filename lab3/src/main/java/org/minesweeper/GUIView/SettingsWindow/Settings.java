@@ -75,24 +75,24 @@ public class Settings extends JFrame implements TextFieldProvider{
         getContentPane().add(panel);
 
     }
-//нужно починить, чтобы кнопка confirm активировалась, только при всех корректно заполненных полях
+
     private void validateFields() {
         String heightText = heightField.getText().trim();
         String widthText = widthField.getText().trim();
         String bombsText = bombsField.getText().trim();
 
-        // Проверяем, что все поля содержат только цифры и не превышают 4 символа
+        // checking
         if (!heightText.matches("\\d{1,4}") || !widthText.matches("\\d{1,4}") || !bombsText.matches("\\d{1,4}")) {
             confirm.setEnabled(false);
             return;
         }
 
-        // Преобразуем в числа
+
         int height = Integer.parseInt(heightText);
         int width = Integer.parseInt(widthText);
         int bombs = Integer.parseInt(bombsText);
 
-        // Проверяем, что количество бомб не превышает общее количество клеток
+        // checking amount of bombs
         if (bombs > height * width) {
             confirm.setEnabled(false);
             return;

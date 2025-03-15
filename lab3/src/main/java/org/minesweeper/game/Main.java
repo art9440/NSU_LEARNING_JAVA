@@ -11,7 +11,8 @@ public class Main {
             view.showMainMenu();
         }
         else if (args[0].equals("Console")){
-            ConsoleView view = new ConsoleView();
+            ConsoleView view = new ConsoleView(model);
+            view.showConsoleMode();
         }
 
     }

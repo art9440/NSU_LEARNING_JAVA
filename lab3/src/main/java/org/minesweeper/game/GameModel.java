@@ -1,6 +1,9 @@
 package org.minesweeper.game;
 
 import org.minesweeper.GUIView.GUIView;
+import org.minesweeper.consoleView.ConsoleView;
+import org.minesweeper.controller.ConsoleListener;
+
 import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -30,6 +33,7 @@ public class GameModel {
     public GameModel(String gameMode){
         this.gameMode = gameMode;
     }
+
 
     public Integer getFieldWidth(){
         return fieldWidth;
@@ -120,6 +124,13 @@ public class GameModel {
         plantBombs();
         if(gameMode.equals("GUI")) {
             GUIView view = new GUIView(this);
+            timer = new Timer(1000, e -> {
+                elapsedTime++;
+                notifyTimeListeners();
+            });
+            view.showGame();
+        } else if (gameMode.equals("Console")) {
+            ConsoleView view = new ConsoleView(this);
             timer = new Timer(1000, e -> {
                 elapsedTime++;
                 notifyTimeListeners();
