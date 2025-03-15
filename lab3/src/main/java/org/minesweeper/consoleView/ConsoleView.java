@@ -15,10 +15,15 @@ import java.util.Scanner;
 
 public class ConsoleView {
     private final GameModel model;
-    String[][] field;
+    private String[][] field;
+    private int bombsRemaining;
 
     public ConsoleView(GameModel model){
         this.model = model;
+    }
+
+    public int getBombsRemaining(){
+        return bombsRemaining;
     }
 
     public void showConsoleMode(){
@@ -65,6 +70,8 @@ public class ConsoleView {
         ConsoleListener listener = new ConsoleListener(model, this);
         field = new String[model.getFieldHeight()][model.getFieldWidth()];
         startField(model.getFieldHeight(), model.getFieldWidth());
+        bombsRemaining = model.getBombsCount();
+        model.startTimer();
 
         while(true){
             for (int i = 0; i < model.getFieldHeight(); i++) {
@@ -73,6 +80,7 @@ public class ConsoleView {
             System.out.println("Write yor action like:\n" +
                     "x y action\n " +
                     "Where x - row, y - column, actoin - 'flag' or 'open");
+            System.out.println("Bombs: " + bombsRemaining);
             System.out.println("> ");
             listener.listenAction();
         }
@@ -88,9 +96,10 @@ public class ConsoleView {
 
     public void updateCell(int x, int y, String img){
         field[x][y] = img;
-        for (int i = 0; i < model.getFieldHeight(); i++) {
-            System.out.println(Arrays.toString(field[i]));
-        }
+    }
+
+    public void updateBombsCounter(int update){
+        bombsRemaining += update;
     }
 
     public void showFailure(){
@@ -98,6 +107,23 @@ public class ConsoleView {
         ConsoleListener listener = new ConsoleListener(model, this);
 
         listener.listenFailureAction();
+    }
+
+    public void showVictory(){
+        model.stopTimer();
+
+        int time = model.getElapsedTime();
+
+        int minutes = time / 60;
+        int seconds = time % 60;
+
+        System.out.println("You have won!");
+        System.out.println("Your time: " + minutes + ":" + seconds);
+        System.out.println("Write your name: ");
+        ConsoleListener listener = new ConsoleListener(model, this);
+        String name = ConsoleListener.listenName();
+        model.addToHighScores(name, time);
+        model.exitFromApp();
     }
 
 }

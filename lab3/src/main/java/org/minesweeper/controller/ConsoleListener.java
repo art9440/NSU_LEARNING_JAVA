@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class ConsoleListener {
     private final GameModel model;
     private final ConsoleView view;
-    Scanner input = new Scanner(System.in);
+    static Scanner input = new Scanner(System.in);
 
     public ConsoleListener(GameModel model, ConsoleView view){
         this.model = model;
@@ -78,10 +78,40 @@ public class ConsoleListener {
                         model.stopTimer();
                         view.showFailure();
                     }
+                    else{
+                        int count = model.countNearBombs(x, y);
+                        if (count > 0){
+                            view.updateCell(x, y, Integer.toString(count));
+                        }
+                        else{
+                            view.updateCell(x, y, "0");
+                            openCells(x, y, model);
+                        }
+                    }
                 }
             }
             else if (action.equals("flag")){
-
+                if(model.isFlagged(x, y)){
+                    view.updateCell(x, y, "*");
+                    model.changeFlag(x, y);
+                    model.notRevealed(x, y);
+                    if (model.isBomb(x, y)){
+                        model.bombsCountChange(1);
+                    }
+                    view.updateBombsCounter(1);
+                }
+                else if(!model.isRevealed(x, y)){
+                    view.updateCell(x, y, "F");
+                    model.changeFlag(x, y);
+                    if (model.isBomb(x, y)){
+                        model.revealCell(x, y);
+                        model.bombsCountChange(-1);
+                    }
+                    view.updateBombsCounter(-1);
+                    if(model.checkVictory() && view.getBombsRemaining() == 0){
+                        view.showVictory();
+                    }
+                }
             }
             else{
                 System.out.println("Wrong command! Try again");
@@ -89,6 +119,30 @@ public class ConsoleListener {
         }
         else{
             System.out.println("Wrong command! Try again");
+        }
+    }
+
+    private void openCells(int x, int y, GameModel model){
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int nx = x + dx, ny = y + dy;
+
+                if(nx >= 0 && ny >= 0 && nx < model.getFieldHeight() && ny < model.getFieldWidth()) {
+                    if (model.isRevealed(nx, ny) || model.isFlagged(nx, ny)) continue;
+
+                    if (model.isBomb(nx, ny)) continue;
+
+                    model.revealCell(nx, ny);
+                    int bombCount = model.countNearBombs(nx, ny);
+
+                    if (bombCount > 0) {
+                        view.updateCell(nx, ny, Integer.toString(bombCount));
+                    } else {
+                        view.updateCell(nx, ny, "0");
+                        openCells(nx, ny, model);
+                    }
+                }
+            }
         }
     }
 
@@ -106,6 +160,13 @@ public class ConsoleListener {
             model.stopTimer();
             model.exitFromApp();
         }
+    }
+
+    public static String listenName(){
+        String commandline = input.nextLine().trim();
+        if (!commandline.isEmpty())
+            return commandline;
+        return "anonim";
     }
 
 
