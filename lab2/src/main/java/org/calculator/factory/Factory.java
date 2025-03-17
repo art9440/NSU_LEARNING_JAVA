@@ -15,6 +15,7 @@ public class Factory {
 
     public Factory(String factoryConfig) {
         this.factoryConfig = factoryConfig;
+        logger.info("Factory is created");
     }
 
 

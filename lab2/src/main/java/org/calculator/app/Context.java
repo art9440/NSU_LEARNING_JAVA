@@ -14,6 +14,9 @@ public class Context {
     private final Stack<Double> calcStack = new Stack<>();
     private final Map<String, Double> varValues = new HashMap<>();
 
+    public Context(){
+        logger.info("Context is created");
+    }
 
     public void putToMap(String variable, double value){
         if (varValues.containsKey(variable)) {
