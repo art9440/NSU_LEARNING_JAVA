@@ -1,9 +1,10 @@
 package org.calculator.commands;
 
 import org.calculator.app.Context;
-import org.calculator.exeptions.ManyArgumentsException;
-import org.calculator.exeptions.NoSuchVariableInMapException;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.contextExceptions.ManyArgumentsCommandException;
+import org.calculator.exeptions.mainExceptions.ManyArgumentsException;
+import org.calculator.exeptions.contextExceptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ public class PushTest {
     }
 
     @Test
-    void testPush_successfullyUsed() throws ManyArgumentsException, NoSuchVariableInMapException, StackIsEmptyException {
+    void testPush_successfullyUsed() throws ManyArgumentsException, NoSuchVariableInMapException, StackIsEmptyException, ManyArgumentsCommandException {
         context.putToMap("a", 4.0);
 
         push = new Push(new String[]{"a"});

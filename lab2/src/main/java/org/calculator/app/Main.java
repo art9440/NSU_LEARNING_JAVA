@@ -1,7 +1,7 @@
 package org.calculator.app;
 
 
-import org.calculator.exeptions.ManyArgumentsException;
+import org.calculator.exeptions.mainExceptions.ManyArgumentsException;
 import java.util.logging.*;
 import java.io.*;
 

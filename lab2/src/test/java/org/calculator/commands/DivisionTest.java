@@ -1,7 +1,8 @@
 package org.calculator.commands;
 
 import org.calculator.app.Context;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.commandsExceptions.ArithmeticCommandException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class DivisionTest {
     }
 
     @Test
-    void testDivision_withValidInput() throws StackIsEmptyException {
+    void testDivision_withValidInput() throws StackIsEmptyException, ArithmeticCommandException {
         // Подготовка данных
         context.push(2.0);
         context.push(10.0);
@@ -41,7 +42,7 @@ public class DivisionTest {
     }
 
     @Test
-    void testDivision_withSingleElementInStack() throws StackIsEmptyException {
+    void testDivision_withSingleElementInStack() throws StackIsEmptyException, ArithmeticCommandException {
         // Стек содержит только 1 элемент
         context.push(5.0);
 

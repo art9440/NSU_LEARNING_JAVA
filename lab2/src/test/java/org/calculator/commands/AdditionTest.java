@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 import org.calculator.app.Context;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

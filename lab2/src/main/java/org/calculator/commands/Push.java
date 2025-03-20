@@ -1,8 +1,9 @@
 package org.calculator.commands;
 
 import org.calculator.app.Context;
-import org.calculator.exeptions.ManyArgumentsException;
-import org.calculator.exeptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.contextExceptions.ManyArgumentsCommandException;
+import org.calculator.exeptions.mainExceptions.ManyArgumentsException;
+import org.calculator.exeptions.contextExceptions.NoSuchVariableInMapException;
 
 import java.util.logging.Logger;
 
@@ -16,10 +17,10 @@ public class Push implements Command {
     }
 
     @Override
-    public void apply(Context context) throws ManyArgumentsException, NoSuchVariableInMapException {
+    public void apply(Context context) throws ManyArgumentsCommandException, NoSuchVariableInMapException {
 
         if (args.length != 1){
-            throw new ManyArgumentsException("Command push needs 1 argument: variable or value");
+            throw new ManyArgumentsCommandException("Command push needs 1 argument: variable or value");
         }
 
         String varOrVal = args[0];

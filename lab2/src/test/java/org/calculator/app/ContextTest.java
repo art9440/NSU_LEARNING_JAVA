@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-import org.calculator.exeptions.NoSuchVariableInMapException;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.contextExceptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 
 public class ContextTest {
     private Context context;

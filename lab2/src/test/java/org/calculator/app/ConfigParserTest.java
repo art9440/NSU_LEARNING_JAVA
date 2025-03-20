@@ -1,5 +1,6 @@
 package org.calculator.app;
 
+import org.calculator.exeptions.configExceptions.ConfigFileNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ public class ConfigParserTest {
     }
 
     @Test
-    public void testReadConfig_successfullyParsing() throws IOException {
+    public void testReadConfig_successfullyParsing() throws IOException, ConfigFileNotFoundException {
 
         ConfigParser configParser = new ConfigParser("testConfig.txt");
 

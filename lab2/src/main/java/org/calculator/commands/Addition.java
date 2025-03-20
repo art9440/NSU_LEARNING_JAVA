@@ -1,8 +1,7 @@
 package org.calculator.commands;
 
 import org.calculator.app.Context;
-import org.calculator.app.Main;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 
 import java.util.logging.Logger;
 

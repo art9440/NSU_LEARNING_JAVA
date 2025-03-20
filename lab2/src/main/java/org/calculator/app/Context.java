@@ -1,7 +1,7 @@
 package org.calculator.app;
 
-import org.calculator.exeptions.NoSuchVariableInMapException;
-import org.calculator.exeptions.StackIsEmptyException;
+import org.calculator.exeptions.contextExceptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.contextExceptions.StackIsEmptyException;
 
 import java.util.HashMap;
 import java.util.Map;

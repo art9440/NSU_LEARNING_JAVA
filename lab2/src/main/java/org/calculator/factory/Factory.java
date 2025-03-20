@@ -2,24 +2,53 @@ package org.calculator.factory;
 
 
 import org.calculator.commands.Command;
-import org.calculator.exeptions.CommandNotFoundException;
+import org.calculator.exeptions.factoryExceptions.CommandNotFoundException;
+import org.calculator.exeptions.factoryExceptions.ConfigFactoryNotFoundException;
+import org.calculator.exeptions.factoryExceptions.CreatingCommandException;
+import org.calculator.exeptions.factoryExceptions.FactoryException;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class Factory {
     private final String factoryConfig;
     private static final Logger logger = Logger.getLogger(Factory.class.getName());
+    private Map<String, String> factoryMap = new HashMap<>();
 
     public Factory(String factoryConfig) {
         this.factoryConfig = factoryConfig;
+        try {
+            this.mappingConfig();
+        }catch (ConfigFactoryNotFoundException | IOException e){
+            logger.severe("Error: " + e.getMessage());
+            System.exit(1);
+        }
         logger.info("Factory is created");
     }
 
+    private void mappingConfig() throws ConfigFactoryNotFoundException, IOException {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(factoryConfig);
+        if (inputStream == null) {
+            throw new ConfigFactoryNotFoundException("Can`t find factory config.");
+        }
 
-    public Command createCommand(String command, String[] arguments) throws ClassNotFoundException, IOException, CommandNotFoundException{
+        BufferedReader configFactoryReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        String line;
+        while ((line = configFactoryReader.readLine()) != null) {
+            String[] lineDiv = line.split("=");
+            factoryMap.put(lineDiv[0], lineDiv[1]);
+        }
+
+        inputStream.close();
+        logger.info("factory config file is closed.");
+    }
+
+
+    public Command createCommand(String command, String[] arguments) throws FactoryException {
         logger.info("Process of creating command: " + command + " is started");
         try {
             String pathToCommand = search(command);
@@ -31,38 +60,22 @@ public class Factory {
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e){
             logger.severe("Something went wrong in Creating command with using this class ->  " + e.getMessage());
-            System.exit(1);
+            throw new CreatingCommandException(e.getMessage());
         }
-        return null;
+        catch (ClassNotFoundException e){
+            throw new CommandNotFoundException(e.getMessage());
+        }
     }
 
-    String search(String command) throws IOException, CommandNotFoundException {
+    String search(String command) throws CommandNotFoundException {
         logger.info("Searching path for command: " + command + " is started.");
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(factoryConfig);
-        logger.info("factory config file was opened.");
-        if (inputStream == null) {
-            throw new FileNotFoundException("Can`t find factory config.");
+
+        String path = factoryMap.get(command);
+        if (path != null){
+            return path;
         }
-
-
-        BufferedReader configFactoryReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        String line;
-        while ((line = configFactoryReader.readLine()) != null) {
-            String[] lineDiv = line.split("=");
-            if (lineDiv[0].equals(command)) {
-                logger.info("Command: " + command + " was found in factory config.");
-                inputStream.close();
-                logger.info("factory config file is closed.");
-                return lineDiv[1];
-            }
-        }
-
-        inputStream.close();
-        logger.info("factory config file is closed.");
 
         throw new CommandNotFoundException("Can`t find "  + command + " in Factory config");
-
-
     }
 
 

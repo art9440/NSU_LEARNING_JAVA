@@ -1,28 +1,28 @@
 package org.calculator.app;
 
 import org.calculator.commands.Command;
-import org.calculator.exeptions.CommandNotFoundException;
-import org.calculator.exeptions.ManyArgumentsException;
-import org.calculator.exeptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.commandsExceptions.ArithmeticCommandException;
+import org.calculator.exeptions.contextExceptions.ContextException;
+import org.calculator.exeptions.contextExceptions.ManyArgumentsCommandException;
+import org.calculator.exeptions.factoryExceptions.CommandNotFoundException;
+import org.calculator.exeptions.factoryExceptions.CreatingCommandException;
+import org.calculator.exeptions.factoryExceptions.FactoryException;
+import org.calculator.exeptions.mainExceptions.ManyArgumentsException;
+import org.calculator.exeptions.contextExceptions.NoSuchVariableInMapException;
+import org.calculator.exeptions.configExceptions.ConfigFileNotFoundException;
 import org.calculator.factory.Factory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Calculator {
-    private Factory factoryForCalc = new Factory("factoryconfig.txt");
-    private Context context = new Context();
+    private final Factory factoryForCalc = new Factory("factoryconfig.txt");
+    private final Context context = new Context();
     private static final Logger logger = Logger.getLogger(Calculator.class.getName());
 
-
-    public Calculator(){
-
-    }
 
     public void launchWithConfig(String[] args){
         String inputFile = args[0];
@@ -38,20 +38,15 @@ public class Calculator {
                 logger.info("Applying command: " + newCommand.getClass().getSimpleName());
                 newCommand.apply(context);
             }
-            catch (IOException e){
-                logger.severe("Error: " + e.getMessage());
-                logger.info("Console mode is on");
-                launchInConsoleMode();
-
-            }
-            catch (CommandNotFoundException | ClassNotFoundException | NoSuchVariableInMapException | ManyArgumentsException e) {
+            catch ( ContextException | FactoryException
+                    | ArithmeticCommandException e) {
                 logger.warning(e.getMessage());
             }
         };
 
         try {
             calcCommands.readConfig(commandLine);
-        } catch (IOException e) {
+        } catch (IOException | ConfigFileNotFoundException e) {
             logger.info("Console mode is on");
             launchInConsoleMode();
         }
@@ -81,11 +76,9 @@ public class Calculator {
                 logger.info("Applying command...");
                 newCommand.apply(context);
                 logger.info("Command was applied.");
-            } catch (IOException e) {
-                logger.severe("Error: " + e.getMessage());
-            } catch (ManyArgumentsException e) {
-                logger.warning(e.getMessage());
-            } catch (CommandNotFoundException | ClassNotFoundException | NoSuchVariableInMapException e) {
+            }
+            catch (FactoryException | ContextException |
+                   ArithmeticCommandException e) {
                 logger.warning("Error while applying command: " + e.getMessage());
             }
         }

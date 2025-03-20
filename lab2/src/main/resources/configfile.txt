@@ -3,5 +3,6 @@ PUSH b
 PUSH a
 PUSH 8
 +
+PUSH 100
 -
 PRINT
