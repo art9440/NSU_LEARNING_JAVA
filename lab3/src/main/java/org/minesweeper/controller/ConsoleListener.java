@@ -58,6 +58,7 @@ public class ConsoleListener {
     public void listenAction(){
         String commandline = input.nextLine().trim();
         String[] args = commandline.split(" ");
+        //сделать проверку, что введены именно числа и в правильной форме
         int x = Integer.parseInt(args[0]);
         int y = Integer.parseInt(args[1]);
         String action = args[2];

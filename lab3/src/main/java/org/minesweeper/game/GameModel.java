@@ -1,6 +1,7 @@
 package org.minesweeper.game;
 
 import org.minesweeper.GUIView.GUIView;
+import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
 import org.minesweeper.consoleView.ConsoleView;
 import org.minesweeper.controller.ConsoleListener;
 
@@ -25,9 +26,13 @@ public class GameModel {
     private Integer[][] bombs;
     private boolean[][] flags; // где стоят флаги
     private boolean[][] revealed;//правильно раскрытые бомбы
-    private Timer timer;
     private int elapsedTime = 0;
+    private final Timer timer = new Timer(1000, e -> {
+        elapsedTime++;
+        notifyTimeListeners();
+    });
     private final List<Runnable> timeListeners = new ArrayList<>();
+    private Boolean loseGame = false;
 
 
     public GameModel(String gameMode){
@@ -96,6 +101,7 @@ public class GameModel {
         revealed[x][y] = false;
     }
 
+    //сделать генерацию бомб по первому клику
     private void plantBombs(){
         int placedBombs = 0;
         while (placedBombs < bombsAmount) {
@@ -124,17 +130,9 @@ public class GameModel {
         plantBombs();
         if(gameMode.equals("GUI")) {
             GUIView view = new GUIView(this);
-            timer = new Timer(1000, e -> {
-                elapsedTime++;
-                notifyTimeListeners();
-            });
             view.showGame();
         } else if (gameMode.equals("Console")) {
             ConsoleView view = new ConsoleView(this);
-            timer = new Timer(1000, e -> {
-                elapsedTime++;
-                notifyTimeListeners();
-            });
             view.showGame();
         }
     }
@@ -193,6 +191,35 @@ public class GameModel {
             writer.write(name + "," + time + "," + this.fieldHeight + "," + this.fieldWidth);
         }catch (IOException e){
             System.err.println("Error when writing to CSV: " + e.getMessage());
+        }
+    }
+
+    //перенести эту логику в модель
+    public void openCells(int x, int y, MinesWeeper view){
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int nx = x + dx, ny = y + dy;
+
+
+                if(nx >= 0 && ny >= 0 && nx < this.getFieldHeight() && ny < this.getFieldWidth()) {
+
+                    if (this.isRevealed(nx, ny) || this.isFlagged(nx, ny)) continue;
+
+                    if (this.isBomb(nx, ny)) continue;
+
+                    this.revealCell(nx, ny);
+                    int bombCount = this.countNearBombs(nx, ny);
+
+
+                    if (bombCount > 0) {
+                        view.updateButton("images/" + bombCount + ".png", nx, ny);
+                    } else {
+                        view.updateButton("images/0.png", nx, ny);
+                        openCells(nx, ny, view);
+                    }
+                }
+            }
         }
     }
 }

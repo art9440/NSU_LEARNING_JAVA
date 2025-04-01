@@ -36,7 +36,8 @@ public class MouseListener extends MouseAdapter {
 
         model.revealCell(x, y);
 
-        if(model.isBomb(x, y)){
+        if(model.isBomb(x, y)){ //переделать это место, вью не должна ничего знать. Я тыкнул, на модели произошла проверка и модель выкынула проиграл
+                                 //ты или нет
             view.updateButton("images/bomb.png", x, y);
             model.stopTimer();
             view.showFailedGameDialog();
@@ -49,39 +50,13 @@ public class MouseListener extends MouseAdapter {
             else{
                 view.updateButton("images/0.png", x, y);
 
-                openCells(x, y, model);
+                model.openCells(x, y, view);
             }
         }
 
     }
 
-    private void openCells(int x, int y, GameModel model){
 
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                int nx = x + dx, ny = y + dy;
-
-
-                if(nx >= 0 && ny >= 0 && nx < model.getFieldHeight() && ny < model.getFieldWidth()) {
-
-                    if (model.isRevealed(nx, ny) || model.isFlagged(nx, ny)) continue;
-
-                    if (model.isBomb(nx, ny)) continue;
-
-                    model.revealCell(nx, ny);
-                    int bombCount = model.countNearBombs(nx, ny);
-
-
-                    if (bombCount > 0) {
-                        view.updateButton("images/" + bombCount + ".png", nx, ny);
-                    } else {
-                        view.updateButton("images/0.png", nx, ny);
-                        openCells(nx, ny, model);
-                    }
-                }
-            }
-        }
-    }
 
     private void handleRightClick(int x, int y){
         if(model.isFlagged(x, y)){

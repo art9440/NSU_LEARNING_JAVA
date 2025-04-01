@@ -151,7 +151,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
         pauseDialog.setVisible(true);
     }
-
+    //раскрыть все бомбы при проигрыше
     public void showFailedGameDialog(){
         JDialog failedGame = new JDialog(this, "Failed game", true);
         failedGame.setSize(250, 150);
@@ -255,5 +255,6 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     public int getBombsRemaining(){
         return bombsRemaining;
     }
+
 
 }
