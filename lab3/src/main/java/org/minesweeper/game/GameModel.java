@@ -1,9 +1,5 @@
 package org.minesweeper.game;
 
-import org.minesweeper.GUIView.GUIView;
-import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
-import org.minesweeper.consoleView.ConsoleView;
-import org.minesweeper.controller.ConsoleListener;
 
 import javax.swing.*;
 import java.io.BufferedWriter;

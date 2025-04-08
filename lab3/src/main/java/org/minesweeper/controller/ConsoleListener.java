@@ -3,7 +3,6 @@ package org.minesweeper.controller;
 import org.minesweeper.consoleView.ConsoleView;
 import org.minesweeper.game.GameModel;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ConsoleListener {
@@ -20,16 +19,11 @@ public class ConsoleListener {
     public void listenCommand(){
         String commandLine = input.nextLine().trim();
 
-        if (commandLine.equals("Exit")){
-            model.exitFromApp();
-        }
-        else if(commandLine.equals("About")){
-            view.showAbout();
-        } else if (commandLine.equals("High Scores")) {
-            view.showHighScores();
-        }
-        else if(commandLine.equals("New Game")){
-            view.showSettings(this);
+        switch (commandLine) {
+            case "Exit" -> model.exitFromApp();
+            case "About" -> view.showAbout();
+            case "High Scores" -> view.showHighScores();
+            case "New Game" -> view.showSettings(this);
         }
     }
 
