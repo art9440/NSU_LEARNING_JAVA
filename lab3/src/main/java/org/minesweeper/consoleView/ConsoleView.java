@@ -78,7 +78,7 @@ public class ConsoleView implements GameViewInterface {
             }
             System.out.println("Write yor action like:\n" +
                     "x y action\n " +
-                    "Where x - row, y - column, actoin - 'flag' or 'open");
+                    "Where x - row, y - column, action - 'flag' or 'open");
             System.out.println("Bombs: " + bombsRemaining);
             System.out.println("> ");
             listener.listenAction();
