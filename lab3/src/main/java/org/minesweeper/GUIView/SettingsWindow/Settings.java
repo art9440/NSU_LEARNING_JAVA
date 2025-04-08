@@ -1,5 +1,6 @@
 package org.minesweeper.GUIView.SettingsWindow;
 
+import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
 
@@ -22,9 +23,8 @@ public class Settings extends JFrame implements TextFieldProvider{
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model){
+    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
         JPanel panel = new JPanel(new VerticalLayout());
-        ActionListener buttonsListener = new ButtonsListener(model, this);
 
 
         JButton backToMenu = new JButton("Back");
@@ -36,7 +36,7 @@ public class Settings extends JFrame implements TextFieldProvider{
 
         panel.add(backToMenu);
 
-        backToMenu.setActionCommand("Back to menu");
+        backToMenu.setActionCommand("Back to menu from Settings");
         defaultB.setActionCommand("Default Settings");
         confirm.setActionCommand("Confirm Settings");
 

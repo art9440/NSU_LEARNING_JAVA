@@ -2,6 +2,7 @@ package org.minesweeper.consoleView;
 
 import org.minesweeper.controller.ConsoleListener;
 import org.minesweeper.game.GameModel;
+import org.minesweeper.game.GameViewInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class ConsoleView {
+public class ConsoleView implements GameViewInterface {
     private final GameModel model;
     private String[][] field;
     private int bombsRemaining;
@@ -64,6 +65,7 @@ public class ConsoleView {
         System.out.println("Where: xx - Height, yy - Width, zz - Amount of bombs");
         listener.listenSettings();
         model.launchGame();
+        showGame();
     }
 
     public void showGame(){
@@ -71,7 +73,6 @@ public class ConsoleView {
         field = new String[model.getFieldHeight()][model.getFieldWidth()];
         startField(model.getFieldHeight(), model.getFieldWidth());
         bombsRemaining = model.getBombsCount();
-        model.startTimer();
 
         while(true){
             for (int i = 0; i < model.getFieldHeight(); i++) {
@@ -120,10 +121,23 @@ public class ConsoleView {
         System.out.println("You have won!");
         System.out.println("Your time: " + minutes + ":" + seconds);
         System.out.println("Write your name: ");
-        ConsoleListener listener = new ConsoleListener(model, this);
         String name = ConsoleListener.listenName();
         model.addToHighScores(name, time);
         model.exitFromApp();
+    }
+
+    public void openAllBombs(){
+        for (int x = 0; x < model.getFieldHeight(); x++){
+            for(int y = 0; y < model.getFieldWidth(); y++){
+                if(model.isBomb(x, y)){
+                    updateCell(x, y, "B");
+                }
+                else{
+                    updateCell(x, y, "*");
+                }
+            }
+            System.out.println(Arrays.toString(field[x]));
+        }
     }
 
 }

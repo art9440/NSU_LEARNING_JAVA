@@ -10,6 +10,7 @@ public class ConsoleListener {
     private final GameModel model;
     private final ConsoleView view;
     static Scanner input = new Scanner(System.in);
+    private boolean firstDecision = false;
 
     public ConsoleListener(GameModel model, ConsoleView view){
         this.model = model;
@@ -43,6 +44,7 @@ public class ConsoleListener {
                 model.setSettings(9, 9, 10);
             }
             else{
+                System.out.println("Confirm Settings");
                 model.setSettings(height, width, bombs);
             }
         }
@@ -54,67 +56,62 @@ public class ConsoleListener {
             model.setSettings(9, 9, 10);
         }
     }
-
+    //сделать на подобии MouseListener
     public void listenAction(){
         String commandline = input.nextLine().trim();
-        String[] args = commandline.split(" ");
-        //сделать проверку, что введены именно числа и в правильной форме
-        int x = Integer.parseInt(args[0]);
-        int y = Integer.parseInt(args[1]);
-        String action = args[2];
-        System.out.println(x + "," + y + "," + action);
-        if (x < model.getFieldHeight() && y < model.getFieldWidth() && x >= 0 && y >= 0) {
-            if (action.equals("open")){
-                if(model.isFlagged(x, y)){
-                    System.out.println("This cell is flagged");
-                }
-                else if(model.isRevealed(x, y)){
-                    System.out.println("This cell is already revealed.");
-                }
-                else{
-                    model.revealCell(x, y);
-
-                    if (model.isBomb(x, y)){
-                        view.updateCell(x, y, "B");
-                        model.stopTimer();
-                        view.showFailure();
-                    }
-                    else{
-                        int count = model.countNearBombs(x, y);
-                        if (count > 0){
-                            view.updateCell(x, y, Integer.toString(count));
+        if(commandline.matches("^\\d+\\s\\d+\\s(open|flag)$")) {
+            String[] args = commandline.split(" ");
+            //сделать проверку, что введены именно числа и в правильной форме
+            int x = Integer.parseInt(args[0]);
+            int y = Integer.parseInt(args[1]);
+            String action = args[2];
+            System.out.println(x + "," + y + "," + action);
+            if (x < model.getFieldHeight() && y < model.getFieldWidth() && x >= 0 && y >= 0) {
+                if (action.equals("open")) {
+                    if (model.isFlagged(x, y)) {
+                        System.out.println("This cell is flagged");
+                    } else if (model.isRevealed(x, y)) {
+                        System.out.println("This cell is already revealed.");
+                    } else {
+                        if (!firstDecision) {
+                            firstDecision = true;
+                            model.plantBombs(x, y);
                         }
-                        else{
-                            view.updateCell(x, y, "0");
-                            openCells(x, y, model);
-                        }
-                    }
-                }
-            }
-            else if (action.equals("flag")){
-                if(model.isFlagged(x, y)){
-                    view.updateCell(x, y, "*");
-                    model.changeFlag(x, y);
-                    model.notRevealed(x, y);
-                    if (model.isBomb(x, y)){
-                        model.bombsCountChange(1);
-                    }
-                    view.updateBombsCounter(1);
-                }
-                else if(!model.isRevealed(x, y)){
-                    view.updateCell(x, y, "F");
-                    model.changeFlag(x, y);
-                    if (model.isBomb(x, y)){
                         model.revealCell(x, y);
-                        model.bombsCountChange(-1);
+                        if (model.stateGame()) {
+                            view.openAllBombs();
+                            model.stopTimer();
+                            view.showFailure();
+                        } else {
+                            int count = model.countNearBombs(x, y);
+                            if (count > 0) {
+                                view.updateCell(x, y, Integer.toString(count));
+                            } else {
+                                view.updateCell(x, y, "0");
+                                model.openCells(x, y, view);
+                            }
+                        }
                     }
-                    view.updateBombsCounter(-1);
-                    if(model.checkVictory() && view.getBombsRemaining() == 0){
-                        view.showVictory();
+                } else if (action.equals("flag")) {
+                    if (model.isFlagged(x, y)) {
+                        view.updateCell(x, y, "*");
+                        model.changeFlag(x, y);
+                        model.notRevealed(x, y);
+                        view.updateBombsCounter(1);
+                    } else if (!model.isRevealed(x, y)) {
+                        view.updateCell(x, y, "F");
+                        model.changeFlag(x, y);
+                        model.checkBomb(x, y);
+                        view.updateBombsCounter(-1);
+
+                        if (model.checkVictory() && view.getBombsRemaining() == 0) {
+                            view.showVictory();
+                        }
                     }
+                } else {
+                    System.out.println("Wrong command! Try again");
                 }
-            }
-            else{
+            } else {
                 System.out.println("Wrong command! Try again");
             }
         }
@@ -123,35 +120,13 @@ public class ConsoleListener {
         }
     }
 
-    private void openCells(int x, int y, GameModel model){
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                int nx = x + dx, ny = y + dy;
-
-                if(nx >= 0 && ny >= 0 && nx < model.getFieldHeight() && ny < model.getFieldWidth()) {
-                    if (model.isRevealed(nx, ny) || model.isFlagged(nx, ny)) continue;
-
-                    if (model.isBomb(nx, ny)) continue;
-
-                    model.revealCell(nx, ny);
-                    int bombCount = model.countNearBombs(nx, ny);
-
-                    if (bombCount > 0) {
-                        view.updateCell(nx, ny, Integer.toString(bombCount));
-                    } else {
-                        view.updateCell(nx, ny, "0");
-                        openCells(nx, ny, model);
-                    }
-                }
-            }
-        }
-    }
 
     public void listenFailureAction(){
         String commandline = input.nextLine().trim();
         if (commandline.equals("Restart")){
             model.stopTimer();
             model.launchGame();
+            firstDecision = false;
             view.showGame();
         } else if (commandline.equals("Main Menu")) {
             model.stopTimer();

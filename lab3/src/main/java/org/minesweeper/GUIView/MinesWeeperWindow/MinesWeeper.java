@@ -1,8 +1,10 @@
 package org.minesweeper.GUIView.MinesWeeperWindow;
 
-import org.minesweeper.controller.ButtonsListener;
+import org.minesweeper.GUIView.GUIView;
+
 import org.minesweeper.controller.MouseListener;
 import org.minesweeper.game.GameModel;
+import org.minesweeper.game.GameViewInterface;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,7 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 
-public class MinesWeeper extends JFrame implements PauseDialog{
+public class MinesWeeper extends JFrame implements GameViewInterface {
     private ActionListener buttonsListener;
     private FieldButton[][] fieldButtons;
     private int hField, wField;
@@ -24,18 +26,16 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     private JLabel timerLabel;
     private GameModel model;
 
-    public MinesWeeper(String winTitle, int h, int w){
+    public MinesWeeper(String winTitle){
         super(winTitle);
 
-        setSize(w, h);
     }
 
-    public void initWindow(GameModel model){
+    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
         this.model = model;
+        this.buttonsListener = buttonsListener;
         bombsRemaining = model.getBombsCount();
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        //в этот topPanel в середину добавить время, которое считается отдельным потоком и в правый край, счет установленных флагов
-        buttonsListener = new ButtonsListener(model, this);
 
         timerLabel = new JLabel("");
         topPanel.add(timerLabel);
@@ -70,16 +70,12 @@ public class MinesWeeper extends JFrame implements PauseDialog{
             for(int j = 0; j < wField; j++){
                 fieldButtons[i][j] = new FieldButton(i, j);
                 fieldButtons[i][j].setPreferredSize(new Dimension(30, 30));
-                //if (model.checkBomb(i, j)) {
-                    //fieldButtons[i][j].setBomb(true);
-                //}
 
                 fieldButtons[i][j].addMouseListener(mouseListener);
                 gamePanel.add(fieldButtons[i][j]);
             }
         }
 
-        model.startTimer();
 
 
         JPanel containerPanel = new JPanel(new GridBagLayout());
@@ -151,7 +147,6 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
         pauseDialog.setVisible(true);
     }
-    //раскрыть все бомбы при проигрыше
     public void showFailedGameDialog(){
         JDialog failedGame = new JDialog(this, "Failed game", true);
         failedGame.setSize(250, 150);
@@ -164,7 +159,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         restartButton.addActionListener(buttonsListener);
 
         JButton mainMenuButton = new JButton("Main Menu");
-        mainMenuButton.setActionCommand("Back to menu");
+        mainMenuButton.setActionCommand("Back to menu from Game");
         mainMenuButton.addActionListener(buttonsListener);
 
         failedGame.add(restartButton);
@@ -175,7 +170,7 @@ public class MinesWeeper extends JFrame implements PauseDialog{
     }
 
 
-    public void updateButton(String path, int x, int y){
+    public void updateCell(int x, int y ,String path){
         FieldButton button = fieldButtons[x][y];
         setButtonIcon(button, path);
         if (!path.equals("images/flag.png") && !path.equals("images/none.png")) {
@@ -205,7 +200,6 @@ public class MinesWeeper extends JFrame implements PauseDialog{
 
 
     public void showVictory(){
-        model.stopTimer();
         int time = model.getElapsedTime();
 
         int minutes = time / 60;
@@ -225,20 +219,25 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         // Создаем кнопки Confirm и Cancel
         String[] options = {"Confirm", "Cancel"};
         int result = JOptionPane.showOptionDialog(
-                this, // Родительское окно
-                panel, // Контент (текст + поле ввода)
-                "Win!", // Заголовок окна
-                JOptionPane.DEFAULT_OPTION, // Тип диалогового окна
-                JOptionPane.INFORMATION_MESSAGE, // Иконка
-                null, // Кастомная иконка (null = стандартная)
-                options, // Кнопки
-                options[0] // Кнопка по умолчанию
+                this,
+                panel,
+                "Win!",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]
         );
 
         if (result == 0){
             model.addToHighScores(nameField.getText().trim(), time);
             this.dispose();
-
+        }
+        else if(result == -1){
+            model.exitFromApp();
+        }
+        else if(result == 1){
+            model.exitFromApp();
         }
     }
 
@@ -256,5 +255,14 @@ public class MinesWeeper extends JFrame implements PauseDialog{
         return bombsRemaining;
     }
 
+    public void openAllBombs(){
+        for (int x = 0; x < model.getFieldHeight(); x++){
+            for (int y = 0; y < model.getFieldWidth(); y++){
+                if(model.isBomb(x, y)){
+                    updateCell( x, y, "images/bomb.png");
+                }
+            }
+        }
+    }
 
 }

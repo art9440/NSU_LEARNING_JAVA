@@ -1,5 +1,6 @@
 package org.minesweeper.GUIView.MainMenuWindow;
 
+import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
 
@@ -10,7 +11,7 @@ import java.awt.event.ActionListener;
 public class MainMenu extends JFrame{
 
 
-    public MainMenu(String winTitle, String path, int w, int h){
+    public MainMenu(String winTitle, int w, int h){
         super(winTitle);
 
         setSize(w, h);
@@ -18,9 +19,8 @@ public class MainMenu extends JFrame{
 
     }
 
-    public void initWindow(GameModel model){
+    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
         JPanel buttonsPanel = new JPanel();
-        ActionListener buttonsListener = new ButtonsListener(model, this);
         BoxLayout boxLayout = new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS);
         buttonsPanel.setLayout(boxLayout);
 

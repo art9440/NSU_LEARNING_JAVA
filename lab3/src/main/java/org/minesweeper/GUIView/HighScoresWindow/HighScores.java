@@ -1,5 +1,6 @@
 package org.minesweeper.GUIView.HighScoresWindow;
 
+import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
 
@@ -24,9 +25,8 @@ public class HighScores extends JFrame {
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model){
+    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
         JPanel buttonsPanel = new JPanel();
-        ActionListener buttonsListener = new ButtonsListener(model, this);
         BoxLayout boxLayout = new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS);
         buttonsPanel.setLayout(boxLayout);
 
@@ -35,7 +35,7 @@ public class HighScores extends JFrame {
 
         backToMenu.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonsPanel.add(backToMenu);
-        backToMenu.setActionCommand("Back to menu");
+        backToMenu.setActionCommand("Back to menu from hs and ab");
 
         backToMenu.addActionListener(buttonsListener);
 

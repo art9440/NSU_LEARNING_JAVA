@@ -16,6 +16,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class GameModel {
     private final String gameMode;
@@ -82,6 +83,13 @@ public class GameModel {
 
     public void revealCell(int x, int y){
         revealed[x][y] = true;
+        if (isBomb(x, y)){
+            loseGame = true;
+        }
+    }
+
+    public Boolean stateGame(){
+        return loseGame;
     }
 
 
@@ -99,16 +107,25 @@ public class GameModel {
 
     public void notRevealed(int x, int y){
         revealed[x][y] = false;
+        if(isBomb(x, y)){
+            bombsCountChange(1);
+        }
     }
 
-    //сделать генерацию бомб по первому клику
-    private void plantBombs(){
+    public void checkBomb(int x, int y){
+        if(isBomb(x, y)){
+            bombsCountChange(-1);
+        }
+    }
+
+
+    public void plantBombs(int _x, int _y){
         int placedBombs = 0;
         while (placedBombs < bombsAmount) {
             int x = getRandomCoordinateX();
             int y = getRandomCoordinateY();
 
-            if (bombs[y][x] == null || bombs[y][x] == 0) {
+            if ((bombs[y][x] == null || bombs[y][x] == 0) && x != _x && y != _y) {
                 bombs[y][x] = 1;
                 placedBombs++;
             }
@@ -116,10 +133,14 @@ public class GameModel {
         for (int i = 0; i < fieldHeight; i++){
             System.out.println(Arrays.toString(bombs[i]));
         }
+        System.out.println("____________________________________\n");
+        startTimer();
     }
 
 
     public void launchGame(){
+        System.out.println("Launching Game");
+        loseGame = false;
         bombs = new Integer[fieldHeight][fieldWidth];
         bombsCount = bombsAmount;
         for (int i = 0; i < fieldHeight; i++){
@@ -127,14 +148,6 @@ public class GameModel {
         }
         flags = new boolean[fieldHeight][fieldWidth];
         revealed = new boolean[fieldHeight][fieldWidth];
-        plantBombs();
-        if(gameMode.equals("GUI")) {
-            GUIView view = new GUIView(this);
-            view.showGame();
-        } else if (gameMode.equals("Console")) {
-            ConsoleView view = new ConsoleView(this);
-            view.showGame();
-        }
     }
 
     public int countNearBombs(int x, int y){
@@ -153,7 +166,12 @@ public class GameModel {
     }
 
     public boolean checkVictory(){
-        return bombsCount == 0;
+        if (bombsCount == 0)
+        {
+            stopTimer();
+            return bombsCount == 0;
+        }
+        return false;
     }
 
     private void notifyTimeListeners() {
@@ -185,17 +203,22 @@ public class GameModel {
     }
 
     public void addToHighScores(String name, Integer time) {
-        Path path = Paths.get("highScores.csv");
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-            writer.newLine();
-            writer.write(name + "," + time + "," + this.fieldHeight + "," + this.fieldWidth);
-        }catch (IOException e){
-            System.err.println("Error when writing to CSV: " + e.getMessage());
+        if(bombsCount == 0) {
+            Path path = Paths.get("highScores.csv");
+            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+                writer.newLine();
+                writer.write(name + "," + time + "," + this.fieldHeight + "," + this.fieldWidth);
+            } catch (IOException e) {
+                System.err.println("Error when writing to CSV: " + e.getMessage());
+            }
+            exitFromApp();
+        }else{
+            System.err.println("Error: invalid enter in highScores table");
         }
     }
 
-    //перенести эту логику в модель
-    public void openCells(int x, int y, MinesWeeper view){
+
+    public void openCells(int x, int y, GameViewInterface view){
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
@@ -213,9 +236,19 @@ public class GameModel {
 
 
                     if (bombCount > 0) {
-                        view.updateButton("images/" + bombCount + ".png", nx, ny);
+                        if (Objects.equals(gameMode, "GUI")) {
+                            view.updateCell(nx, ny, "images/" + bombCount + ".png");
+                        }
+                        else{
+                            view.updateCell(nx, ny, Integer.toString(bombCount));
+                        }
                     } else {
-                        view.updateButton("images/0.png", nx, ny);
+                        if (Objects.equals(gameMode, "GUI")){
+                            view.updateCell(nx, ny, "images/0.png");
+                        }
+                        else{
+                            view.updateCell(nx, ny, "0");
+                        }
                         openCells(nx, ny, view);
                     }
                 }

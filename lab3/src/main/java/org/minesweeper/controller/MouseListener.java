@@ -1,6 +1,5 @@
 package org.minesweeper.controller;
 
-import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.GUIView.MinesWeeperWindow.FieldButton;
 import org.minesweeper.GUIView.MinesWeeperWindow.MinesWeeper;
 import org.minesweeper.game.GameModel;
@@ -12,6 +11,7 @@ import java.awt.event.MouseEvent;
 public class MouseListener extends MouseAdapter {
     private final GameModel model;
     private final MinesWeeper view;
+    private boolean firstClick = false;
 
     public MouseListener(GameModel model, MinesWeeper view){
         this.model = model;
@@ -23,10 +23,13 @@ public class MouseListener extends MouseAdapter {
         FieldButton button = (FieldButton) e.getSource();
         int x = button.getXCoord();
         int y = button.getYCoord();
-        if (SwingUtilities.isLeftMouseButton(e)) {
-           handleLeftClick(x, y); //раскрытие клетки и соседей
+        if (!firstClick){
+            model.plantBombs(x , y);
+            firstClick = true;
         }
-        else if(SwingUtilities.isRightMouseButton(e)){
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            handleLeftClick(x, y); //раскрытие клетки и соседей
+        } else if (SwingUtilities.isRightMouseButton(e)) {
             handleRightClick(x, y);
         }
     }
@@ -36,19 +39,18 @@ public class MouseListener extends MouseAdapter {
 
         model.revealCell(x, y);
 
-        if(model.isBomb(x, y)){ //переделать это место, вью не должна ничего знать. Я тыкнул, на модели произошла проверка и модель выкынула проиграл
-                                 //ты или нет
-            view.updateButton("images/bomb.png", x, y);
+        if (model.stateGame()){
+            view.openAllBombs();
             model.stopTimer();
             view.showFailedGameDialog();
         }
         else{
             int count = model.countNearBombs(x, y);
             if (count > 0){
-                view.updateButton("images/" + count + ".png", x, y);
+                view.updateCell(x, y, "images/" + count + ".png");
             }
             else{
-                view.updateButton("images/0.png", x, y);
+                view.updateCell(x, y, "images/0.png");
 
                 model.openCells(x, y, view);
             }
@@ -60,21 +62,15 @@ public class MouseListener extends MouseAdapter {
 
     private void handleRightClick(int x, int y){
         if(model.isFlagged(x, y)){
-            view.updateButton("images/none.png", x, y);
+            view.updateCell(x, y, "images/none.png");
             model.changeFlag(x, y);
             model.notRevealed(x, y);
-            if(model.isBomb(x, y)){
-                model.bombsCountChange(1);
-            }
             view.updateBombsCounter(1);
         }
         else if (!model.isRevealed(x, y)){
-            view.updateButton("images/flag.png", x, y);
+            view.updateCell(x, y, "images/flag.png");
             model.changeFlag(x, y);
-            if(model.isBomb(x, y)){
-                model.revealCell(x, y);
-                model.bombsCountChange(-1);
-            }
+            model.checkBomb(x, y);
             view.updateBombsCounter(-1);
             if(model.checkVictory() && view.getBombsRemaining() == 0){
                 view.showVictory();

@@ -1,5 +1,6 @@
 package org.minesweeper.GUIView.AboutWindow;
 
+import org.minesweeper.GUIView.GUIView;
 import org.minesweeper.controller.ButtonsListener;
 import org.minesweeper.game.GameModel;
 
@@ -16,15 +17,14 @@ public class About extends JFrame{
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model){
+    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        ActionListener buttonsListener = new ButtonsListener(model, this);
 
         JButton backToMenu = new JButton("Back");
 
         backToMenu.setAlignmentX(Component.LEFT_ALIGNMENT);
         buttonsPanel.add(backToMenu);
-        backToMenu.setActionCommand("Back to menu");
+        backToMenu.setActionCommand("Back to menu from hs and ab");
         backToMenu.addActionListener(buttonsListener);
 
         add(buttonsPanel, BorderLayout.NORTH);
