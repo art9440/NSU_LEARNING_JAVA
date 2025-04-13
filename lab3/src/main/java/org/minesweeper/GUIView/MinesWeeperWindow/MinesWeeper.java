@@ -31,7 +31,7 @@ public class MinesWeeper extends JFrame implements GameViewInterface {
 
     }
 
-    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
+    public void initWindow(GameModel model, ActionListener buttonsListener){
         this.model = model;
         this.buttonsListener = buttonsListener;
         bombsRemaining = model.getBombsCount();

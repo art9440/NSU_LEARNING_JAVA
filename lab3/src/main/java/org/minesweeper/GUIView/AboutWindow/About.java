@@ -17,7 +17,7 @@ public class About extends JFrame{
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
+    public void initWindow(ActionListener buttonsListener){
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         JButton backToMenu = new JButton("Back");

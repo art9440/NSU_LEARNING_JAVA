@@ -23,7 +23,7 @@ public class Settings extends JFrame implements TextFieldProvider{
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
+    public void initWindow(ActionListener buttonsListener){
         JPanel panel = new JPanel(new VerticalLayout());
 
 

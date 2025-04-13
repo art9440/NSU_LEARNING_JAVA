@@ -38,7 +38,7 @@ public class ConsoleListener {
                 model.setSettings(9, 9, 10);
             }
             else{
-                System.out.println("Confirm Settings");
+                //System.out.println("Confirm Settings");
                 model.setSettings(height, width, bombs);
             }
         }

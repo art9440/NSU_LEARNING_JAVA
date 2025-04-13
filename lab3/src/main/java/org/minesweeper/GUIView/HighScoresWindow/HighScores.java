@@ -25,7 +25,7 @@ public class HighScores extends JFrame {
         setSize(w, h);
     }
 
-    public void initWindow(GameModel model, GUIView view, ActionListener buttonsListener){
+    public void initWindow(ActionListener buttonsListener){
         JPanel buttonsPanel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS);
         buttonsPanel.setLayout(boxLayout);

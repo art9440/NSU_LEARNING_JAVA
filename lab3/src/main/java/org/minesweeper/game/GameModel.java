@@ -57,11 +57,11 @@ public class GameModel {
     }
 
     private int getRandomCoordinateX(){
-        return (int) (Math.random() * fieldWidth);
+        return (int) (Math.random() * fieldHeight);
     }
 
     private int getRandomCoordinateY(){
-        return (int) (Math.random() * fieldHeight);
+        return (int) (Math.random() * fieldWidth);
     }
 
 
@@ -118,11 +118,11 @@ public class GameModel {
     public void plantBombs(int _x, int _y){
         int placedBombs = 0;
         while (placedBombs < bombsAmount) {
-            int x = getRandomCoordinateX();
-            int y = getRandomCoordinateY();
+            int y = getRandomCoordinateX();
+            int x= getRandomCoordinateY();
 
-            if ((bombs[y][x] == null || bombs[y][x] == 0) && x != _x && y != _y) {
-                bombs[y][x] = 1;
+            if ((bombs[x][y] == null || bombs[x][y] == 0) && x != _x && y != _y) {
+                bombs[x][y] = 1;
                 placedBombs++;
             }
         }
@@ -135,7 +135,7 @@ public class GameModel {
 
 
     public void launchGame(){
-        System.out.println("Launching Game");
+        //System.out.println("Launching Game");
         loseGame = false;
         bombs = new Integer[fieldHeight][fieldWidth];
         bombsCount = bombsAmount;

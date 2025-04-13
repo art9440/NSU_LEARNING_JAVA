@@ -10,7 +10,6 @@ import org.minesweeper.game.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 public class GUIView {
     private final GameModel model;
@@ -31,7 +30,7 @@ public class GUIView {
 
     public void showMainMenu(){
 
-        mainMenu.initWindow(model, this, buttonsListener);
+        mainMenu.initWindow(buttonsListener);
         mainMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainMenu.setResizable(false);
         mainMenu.setVisible(true);
@@ -39,7 +38,7 @@ public class GUIView {
     }
 
     public void showAbout(){
-        about.initWindow(model, this, buttonsListener);
+        about.initWindow(buttonsListener);
         about.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         about.setResizable(true);
         about.setVisible(true);
@@ -47,7 +46,7 @@ public class GUIView {
     }
 
     public void showHighScores(){
-        highScores.initWindow(model, this, buttonsListener);
+        highScores.initWindow(buttonsListener);
         highScores.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         highScores.setResizable(true);
         highScores.setVisible(true);
@@ -57,23 +56,22 @@ public class GUIView {
     public void showSettings(){
         Settings settings = new Settings("Settings", 400, 400);
         buttonsListener.setSettingsFrame(settings);
-        settings.initWindow(model, this, buttonsListener);
+        settings.initWindow(buttonsListener);
         settings.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         settings.setResizable(false);
         settings.setVisible(true);
     }
 
     public void showGame(){
-        SwingUtilities.invokeLater(() -> {
             MinesWeeper minesWeeper = new MinesWeeper("Mines Weeper");
             buttonsListener.setMinesWeeperFrame(minesWeeper);
             minesWeeper.setSize(model.getFieldWidth() * 40, model.getFieldHeight() * 40);
-            minesWeeper.initWindow(model, this, buttonsListener);
+            minesWeeper.initWindow(model, buttonsListener);
             minesWeeper.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             minesWeeper.setResizable(true);
             minesWeeper.setVisible(true);
             minesWeeper.setMinimumSize(new Dimension(300, 400));
-        });
+
     }
 
     public void setUnvisiableAllFrames(){
