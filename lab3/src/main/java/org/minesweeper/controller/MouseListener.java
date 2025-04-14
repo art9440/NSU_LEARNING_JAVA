@@ -19,7 +19,7 @@ public class MouseListener extends MouseAdapter {
     }
 
     @Override
-    public void mousePressed(MouseEvent e){
+    public void mouseClicked(MouseEvent e){
         FieldButton button = (FieldButton) e.getSource();
         int x = button.getXCoord();
         int y = button.getYCoord();
