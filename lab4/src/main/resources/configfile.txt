@@ -1,0 +1,8 @@
+StorageBodySize=100
+StorageEngineSize=100
+StorageAccessorySize=100
+StorageCarSize=100
+AccessorySup=5
+Workers=2
+Dealers=3
+LogSales=true
