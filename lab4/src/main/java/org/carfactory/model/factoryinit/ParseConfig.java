@@ -1,7 +1,7 @@
-package org.carfactory.factoryinit;
+package org.carfactory.model.factoryinit;
 
-import org.carfactory.parseexceptions.ConfigFactoryNotFoundException;
-import org.carfactory.parseexceptions.ParseConfigException;
+import org.carfactory.model.parseexceptions.ConfigFactoryNotFoundException;
+import org.carfactory.model.parseexceptions.ParseConfigException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

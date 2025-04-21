@@ -1,4 +1,4 @@
-package org.carfactory.factoryinit;
+package org.carfactory.model.factoryinit;
 
 
 public class Main {

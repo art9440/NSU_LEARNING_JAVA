@@ -21,7 +21,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>org.carfactory.factoryinit.Main</mainClass>  <!-- Убедись, что класс правильный -->
+                    <mainClass>org.carfactory.model.factoryinit.Main</mainClass>  <!-- Убедись, что класс правильный -->
                 </configuration>
             </plugin>
         </plugins>

@@ -1,4 +1,4 @@
-package org.carfactory.parseexceptions;
+package org.carfactory.model.parseexceptions;
 
 public class ConfigFactoryNotFoundException extends ParseConfigException{
 
