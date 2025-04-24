@@ -1,4 +1,4 @@
 package org.carfactory.model.suppliers;
 
-public class StorageAccessory {
+public class Threadpool<T>{
 }

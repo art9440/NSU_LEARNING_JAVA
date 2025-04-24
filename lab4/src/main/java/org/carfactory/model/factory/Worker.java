@@ -1,4 +1,9 @@
 package org.carfactory.model.factory;
 
-public class Worker extends Thread{
+public class Worker implements Runnable{
+
+    @Override
+    public void run(){
+
+    }
 }

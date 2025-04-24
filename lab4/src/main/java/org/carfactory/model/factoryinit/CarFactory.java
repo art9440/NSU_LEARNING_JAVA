@@ -1,11 +1,17 @@
 package org.carfactory.model.factoryinit;
 
-import org.carfactory.model.factory.StorageCar;
+import org.carfactory.model.details.Accessory;
+import org.carfactory.model.details.Body;
+import org.carfactory.model.details.Engine;
+import org.carfactory.model.factory.Car;
+import org.carfactory.model.factory.ControllerOfStorageCar;
 import org.carfactory.model.parseexceptions.ParseConfigException;
-import org.carfactory.model.suppliers.StorageAccessory;
-import org.carfactory.model.suppliers.StorageBody;
-import org.carfactory.model.suppliers.StorageEngine;
+import org.carfactory.model.suppliers.*;
+import org.carfactory.view.GUIView;
 
+import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -30,12 +36,44 @@ public class CarFactory {
             setupLogger();
         }
 
-        StorageCar storageCar = new StorageCar(Integer.parseInt(configMap.get("StorageCarSize")));
-        StorageBody storageBody = new StorageBody();
-        StorageAccessory storageAccessory = new StorageAccessory();
-        StorageEngine storageEngine = new StorageEngine();
-        //создание всех потоков в виде объектов и одновременный запуск
+        Storage<Engine> engineStorage = new Storage<>(Integer.parseInt(configMap.get("StorageEngineSize")));
+        Storage<Body> bodyStorage = new Storage<>(Integer.parseInt(configMap.get("StorageBodySize")));
+        Storage<Accessory> accessoryStorage = new Storage<>(Integer.parseInt(configMap.get("StorageAccessorySize")));
+        Storage<Car> carStorage = new Storage<>(Integer.parseInt(configMap.get("StorageCarSize")));
+
+        Supplier<Engine> engineSupplier = new Supplier<>(engineStorage, Engine.class);
+        Supplier<Body> bodySupplier = new Supplier<>(bodyStorage, Body.class);
+
+
+
+        Thread engineSupplierThread = new Thread(engineSupplier);
+        Thread bodySupplierThread = new Thread(bodySupplier);
+
+        engineSupplierThread.start();
+        bodySupplierThread.start();
+
+
+        //вот здесь создание всех потоков accessory, workers и dealers
+        //затем одновременный запуск
+        //запуск view
+
+        GUIView view = new GUIView(engineSupplier, bodySupplier, engineStorage, bodyStorage);
+
+        view.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        view.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                onClose();
+                view.dispose();
+            }
+        });
+        view.setResizable(false);
+        view.setVisible(true);
+
+        SwingUtilities.invokeLater(() -> view.initWindow());
     }
+
 
     private void exitApp(){
         System.exit(0);
@@ -54,5 +92,9 @@ public class CarFactory {
         } catch (IOException e) {
             System.err.println("Error logging: " + e.getMessage());
         }
+    }
+
+    public void onClose() {
+
     }
 }
