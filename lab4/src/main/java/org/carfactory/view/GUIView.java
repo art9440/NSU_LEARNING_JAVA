@@ -8,6 +8,8 @@ import org.carfactory.model.suppliers.Storage;
 import org.carfactory.model.suppliers.Supplier;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionListener;
 
 public class GUIView extends JFrame {
@@ -34,12 +36,53 @@ public class GUIView extends JFrame {
 
         panel.setLayout(layout);
 
-        JLabel engineSupplierLabel = new JLabel("Delay for Engine Supplier");
+        JLabel engineSupplierLabel = new JLabel("Delay for Engine Supplier"); //Engine Supplier
 
+        JSlider engineSupplierSlider = new JSlider(0, 3, 0);
+        engineSupplierSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                engineSupplier.setDelay(engineSupplierSlider.getValue());
+            }
+        });
+
+        engineSupplierSlider.setMajorTickSpacing(1);
+        engineSupplierSlider.setPaintTicks(true);
+        engineSupplierSlider.setPaintLabels(true);
+
+        JLabel bodySupplierLabel = new JLabel("Delay for Body Supplier"); //Body Supplier
+
+        JSlider bodySupplierSlider = new JSlider(0, 3, 0);
+        bodySupplierSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                bodySupplier.setDelay(bodySupplierSlider.getValue());
+            }
+        });
+
+        bodySupplierSlider.setMajorTickSpacing(1);
+        bodySupplierSlider.setPaintTicks(true);
+        bodySupplierSlider.setPaintLabels(true);
+
+
+
+        panel.add(bodySupplierLabel);
         panel.add(engineSupplierLabel);
+        panel.add(engineSupplierSlider);
+        panel.add(bodySupplierSlider);
 
-        layout.putConstraint(SpringLayout.WEST, engineSupplierLabel, 20, SpringLayout.WEST, panel);
+
+        layout.putConstraint(SpringLayout.WEST, engineSupplierLabel, 20, SpringLayout.WEST, panel); //Label for Engine Supplier
         layout.putConstraint(SpringLayout.NORTH, engineSupplierLabel, 60, SpringLayout.NORTH, panel);
+
+        layout.putConstraint(SpringLayout.NORTH, engineSupplierSlider, 20, SpringLayout.NORTH, engineSupplierLabel); //Slider for Engine Supplier
+        layout.putConstraint(SpringLayout.WEST, engineSupplierSlider, 20, SpringLayout.WEST, panel);
+
+        layout.putConstraint(SpringLayout.NORTH, bodySupplierLabel, 60, SpringLayout.SOUTH, engineSupplierSlider); //Label for Body Supplier
+        layout.putConstraint(SpringLayout.WEST, bodySupplierLabel, 20, SpringLayout.WEST, panel);
+
+        layout.putConstraint(SpringLayout.NORTH, bodySupplierSlider, 20, SpringLayout.SOUTH, bodySupplierLabel); //Label for Body Supplier
+        layout.putConstraint(SpringLayout.WEST, bodySupplierSlider, 20, SpringLayout.WEST, panel);
 
         this.add(panel);
     }

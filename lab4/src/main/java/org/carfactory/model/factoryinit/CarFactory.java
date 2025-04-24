@@ -64,7 +64,8 @@ public class CarFactory {
         view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                onClose();
+                engineSupplierThread.interrupt();
+                bodySupplierThread.interrupt();
                 view.dispose();
             }
         });
