@@ -35,7 +35,11 @@ public class Supplier<T extends Part> implements Runnable {
                 newID++;
                 System.out.println(part.getClass());
                 if (storage.getNowSize() == storage.getSize()){
-                    wait();
+                    synchronized (storage) {
+                        storage.wait();
+                    }
+                }
+                else {
                     storage.put(part);
                 }
 

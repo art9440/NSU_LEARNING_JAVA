@@ -10,6 +10,7 @@ import org.carfactory.model.suppliers.Supplier;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class GUIView extends JFrame {
@@ -18,6 +19,8 @@ public class GUIView extends JFrame {
     private final Supplier<Body> bodySupplier;
     private final Storage<Engine> engineStorage;
     private final Storage<Body> bodyStorage;
+    private JLabel engineStorageSizeLabel;
+    private JLabel bodyStorageSizeLabel;
 
     public GUIView(Supplier<Engine> engineSupplier, Supplier<Body> bodySupplier, Storage<Engine> engineStorage, Storage<Body> bodyStorage){
         super();
@@ -64,12 +67,24 @@ public class GUIView extends JFrame {
         bodySupplierSlider.setPaintTicks(true);
         bodySupplierSlider.setPaintLabels(true);
 
+        engineStorageSizeLabel = new JLabel("0");
+        bodyStorageSizeLabel = new JLabel("0");
 
+        engineStorageSizeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        engineStorageSizeLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        bodyStorageSizeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        bodyStorageSizeLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        engineStorage.addSizeListener(this::updateSizeEngine);
+        bodyStorage.addSizeListener(this::updateSizeBody);
 
         panel.add(bodySupplierLabel);
         panel.add(engineSupplierLabel);
         panel.add(engineSupplierSlider);
         panel.add(bodySupplierSlider);
+        panel.add(engineStorageSizeLabel);
+        panel.add(bodyStorageSizeLabel);
 
 
         layout.putConstraint(SpringLayout.WEST, engineSupplierLabel, 20, SpringLayout.WEST, panel); //Label for Engine Supplier
@@ -84,6 +99,16 @@ public class GUIView extends JFrame {
         layout.putConstraint(SpringLayout.NORTH, bodySupplierSlider, 20, SpringLayout.SOUTH, bodySupplierLabel); //Label for Body Supplier
         layout.putConstraint(SpringLayout.WEST, bodySupplierSlider, 20, SpringLayout.WEST, panel);
 
+        layout.putConstraint(SpringLayout.EAST, engineStorageSizeLabel, 20, SpringLayout.EAST, panel);
+
         this.add(panel);
+    }
+
+    private void updateSizeEngine(){
+        engineStorageSizeLabel.setText(Integer.toString(engineStorage.getNowSize()));
+    }
+
+    private void updateSizeBody(){
+        bodyStorageSizeLabel.setText(Integer.toString(bodyStorage.getNowSize()));
     }
 }
