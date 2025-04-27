@@ -6,4 +6,8 @@ public class Part {
     public Part(Integer id){
         this.id = id;
     }
+
+    public int getID(){
+        return id;
+    }
 }

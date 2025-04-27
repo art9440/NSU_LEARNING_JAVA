@@ -4,7 +4,6 @@ import org.carfactory.model.details.Accessory;
 import org.carfactory.model.details.Body;
 import org.carfactory.model.details.Engine;
 import org.carfactory.model.factory.Car;
-import org.carfactory.model.factory.ControllerOfStorageCar;
 import org.carfactory.model.parseexceptions.ParseConfigException;
 import org.carfactory.model.suppliers.*;
 import org.carfactory.view.GUIView;
@@ -44,10 +43,17 @@ public class CarFactory {
         Supplier<Engine> engineSupplier = new Supplier<>(engineStorage, Engine.class);
         Supplier<Body> bodySupplier = new Supplier<>(bodyStorage, Body.class);
 
+        ThreadpoolAccessorySuppliers<Accessory> accessorySuppliers = new ThreadpoolAccessorySuppliers<>(accessoryStorage,
+                Accessory.class, Integer.parseInt(configMap.get("AccessorySup")));
+
 
 
         Thread engineSupplierThread = new Thread(engineSupplier);
         Thread bodySupplierThread = new Thread(bodySupplier);
+
+        for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++){
+            accessorySuppliers.startThread(i);
+        }
 
         engineSupplierThread.start();
         bodySupplierThread.start();
@@ -57,7 +63,7 @@ public class CarFactory {
         //затем одновременный запуск
         //запуск view
 
-        GUIView view = new GUIView(engineSupplier, bodySupplier, engineStorage, bodyStorage);
+        GUIView view = new GUIView(engineSupplier, bodySupplier, engineStorage, bodyStorage, accessorySuppliers, accessoryStorage);
 
         view.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -66,6 +72,9 @@ public class CarFactory {
             public void windowClosing(WindowEvent e) {
                 engineSupplierThread.interrupt();
                 bodySupplierThread.interrupt();
+                for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++){
+                    accessorySuppliers.stopThread(i);
+                }
                 view.dispose();
             }
         });

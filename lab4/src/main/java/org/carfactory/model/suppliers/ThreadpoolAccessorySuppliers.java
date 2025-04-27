@@ -2,12 +2,15 @@ package org.carfactory.model.suppliers;
 
 import org.carfactory.model.details.Part;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Supplier<T extends Part> implements Runnable {
+public class ThreadpoolAccessorySuppliers<T extends Part> implements Runnable{
+    private Thread[] suppliers;
     private final Storage<T> storage;
     private final Class<T> classPart;
-    private volatile int delay = 3;
+    private int suppliersCount;
+    private int delay = 3;
     private int createdParts = 0;
     private int newID = 1;
     private Runnable listener = new Runnable() {
@@ -17,23 +20,42 @@ public class Supplier<T extends Part> implements Runnable {
         }
     };
 
-
-    public Supplier(Storage<T> storage, Class<T> classPart){
+    public ThreadpoolAccessorySuppliers(Storage<T> storage, Class<T> classPart, int suppliersCount){
         this.storage = storage;
         this.classPart = classPart;
-    }
-
-    public void setDelay(int delay){
-        this.delay = delay;
+        this.suppliersCount = suppliersCount;
+        suppliers = new Thread[suppliersCount];
+        for (int i = 0; i < suppliersCount; i++){
+            suppliers[i] = new Thread(this);
+        }
     }
 
     public int getCreatedParts(){
         return createdParts;
     }
 
+    public void setDelay(int delay){
+        this.delay = delay;
+    }
+
+
+
+    public int getSuppliersCount(){
+        return suppliersCount;
+    }
+
+    public void startThread(int i){
+        suppliers[i].start();
+    }
+
+    public void stopThread(int i){
+        suppliers[i].interrupt();
+    }
+
+
     @Override
     public void run() {
-        while(!Thread.currentThread().isInterrupted()){
+        while(!Thread.currentThread().isInterrupted()) {
             try {
                 Thread.sleep(delay * 1000L);
                 T part = classPart.getDeclaredConstructor(Integer.class).newInstance(newID);
@@ -47,7 +69,6 @@ public class Supplier<T extends Part> implements Runnable {
                     }
                     storage.put(part);
                 }
-
             } catch (Exception e){
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
