@@ -38,6 +38,7 @@ public class GUIView extends JFrame {
     private JLabel accessoryCreatedCounterLabel;
     private JLabel carStorageSizeLabel;
     private JLabel carCreatedCounterLabel;
+    private JLabel tasksCounterLabel;
 
 
     public GUIView(Supplier<Engine> engineSupplier, Supplier<Body> bodySupplier, Storage<Engine> engineStorage, Storage<Body> bodyStorage,
@@ -192,6 +193,11 @@ public class GUIView extends JFrame {
 
         JLabel tasksLabel = new JLabel("Amount of Tasks: ");
 
+        tasksCounterLabel = new JLabel("0");
+        tasksCounterLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        tasksCounterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        controller.addTaskListener(this::updateTasks);
+
         panel.add(bodySupplierLabel);
         panel.add(engineSupplierLabel);
         panel.add(engineSupplierSlider);
@@ -217,6 +223,7 @@ public class GUIView extends JFrame {
         panel.add(dealersLabel);
         panel.add(dealersSlider);
         panel.add(tasksLabel);
+        panel.add(tasksCounterLabel);
 
         layout.putConstraint(SpringLayout.WEST, engineSupplierLabel, 20, SpringLayout.WEST, panel); //Label for Engine Supplier
         layout.putConstraint(SpringLayout.NORTH, engineSupplierLabel, 40, SpringLayout.NORTH, panel);
@@ -293,6 +300,9 @@ public class GUIView extends JFrame {
         layout.putConstraint(SpringLayout.WEST, tasksLabel, 0, SpringLayout.WEST, accessorySizeStorageTextLabel);
         layout.putConstraint(SpringLayout.NORTH, tasksLabel, 0, SpringLayout.NORTH, carCreatedCounterTextLabel);
 
+        layout.putConstraint(SpringLayout.WEST, tasksCounterLabel, 0, SpringLayout.WEST, tasksLabel);
+        layout.putConstraint(SpringLayout.NORTH, tasksCounterLabel, 10, SpringLayout.SOUTH, tasksLabel);
+
         this.add(panel);
     }
 
@@ -325,5 +335,9 @@ public class GUIView extends JFrame {
 
     private void updateCreatedCar(){
         carCreatedCounterLabel.setText(Integer.toString(workers.getCreatedParts()));
+    }
+
+    private void updateTasks(){
+        tasksCounterLabel.setText(Integer.toString(controller.getTaskCount()));
     }
 }

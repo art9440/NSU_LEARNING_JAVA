@@ -24,7 +24,7 @@ public class Storage<T> {
     }
 
     public synchronized void put(T detail){
-        System.out.println(detail.getClass());
+        //System.out.println(detail.getClass());
         store.add(detail);
         nowSize++;
         notifySizeListener();

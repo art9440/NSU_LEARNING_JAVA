@@ -9,15 +9,23 @@ public class ControllerOfStorageCar implements Runnable{
     private final BlockingQueue<Object> taskQueue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
 
+    private Runnable listener = new Runnable() {
+        @Override
+        public void run() {
+
+        }
+    };
+
     public synchronized void notifySold(){
         taskQueue.offer(new Object());
+        notifyTaskListener();
     }
 
     public Object getBuildTask() throws InterruptedException{
         return taskQueue.take();
     }
 
-    public int getTaskCount() {
+    public synchronized int getTaskCount() {
         return taskQueue.size();
     }
 
@@ -35,5 +43,13 @@ public class ControllerOfStorageCar implements Runnable{
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void addTaskListener(Runnable listener){
+        this.listener = listener;
+    }
+
+    private void notifyTaskListener(){
+        listener.run();
     }
 }

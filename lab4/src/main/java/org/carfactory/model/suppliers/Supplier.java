@@ -38,7 +38,7 @@ public class Supplier<T extends Part> implements Runnable {
                 T part = classPart.getDeclaredConstructor().newInstance();
                 createdParts++;
                 notifyCreatedListener();
-                System.out.println(part.getClass() + "," + part.getID());
+                //System.out.println(part.getClass() + "," + part.getID());
                 synchronized (storage) {
                     while (storage.getNowSize() == storage.getSize()){
                         storage.wait();
