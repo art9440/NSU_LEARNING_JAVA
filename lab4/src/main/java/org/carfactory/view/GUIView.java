@@ -1,19 +1,22 @@
 package org.carfactory.view;
 
 import org.carfactory.controller.GUIListener;
+import org.carfactory.model.dealercenter.ThreadpoolDealers;
 import org.carfactory.model.details.Accessory;
 import org.carfactory.model.details.Body;
 import org.carfactory.model.details.Engine;
-import org.carfactory.model.factoryinit.CarFactory;
+import org.carfactory.model.factory.Car;
+import org.carfactory.model.factory.ControllerOfStorageCar;
+import org.carfactory.model.factory.ThreadpoolWorkers;
 import org.carfactory.model.suppliers.Storage;
 import org.carfactory.model.suppliers.Supplier;
-import org.carfactory.model.suppliers.ThreadpoolAccessorySuppliers;
+
+import org.carfactory.threadpool.Threadpool;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 public class GUIView extends JFrame {
     private final GUIListener listener = new GUIListener();
@@ -22,24 +25,35 @@ public class GUIView extends JFrame {
     private final Storage<Engine> engineStorage;
     private final Storage<Body> bodyStorage;
     private final Storage<Accessory> accessoryStorage;
-    private final ThreadpoolAccessorySuppliers<Accessory> accessorySupliers;
+    private final Threadpool<Accessory> accessorySuppliers;
+    private final ThreadpoolWorkers workers;
+    private final Storage<Car> carStorage;
+    private final ThreadpoolDealers dealers;
+    private final ControllerOfStorageCar controller;
     private JLabel engineStorageSizeLabel;
     private JLabel bodyStorageSizeLabel;
     private JLabel accessoryStorageSizeLabel;
     private JLabel engineCreatedCounterLabel;
     private JLabel bodyCreatedCounterLabel;
     private JLabel accessoryCreatedCounterLabel;
+    private JLabel carStorageSizeLabel;
+    private JLabel carCreatedCounterLabel;
 
 
     public GUIView(Supplier<Engine> engineSupplier, Supplier<Body> bodySupplier, Storage<Engine> engineStorage, Storage<Body> bodyStorage,
-    ThreadpoolAccessorySuppliers<Accessory> accessorySupliers, Storage<Accessory> accessoryStorage){
+                   Threadpool<Accessory> accessorySuppliers, Storage<Accessory> accessoryStorage, ThreadpoolWorkers workers, Storage<Car> carStorage,
+                   ThreadpoolDealers dealers, ControllerOfStorageCar controller){
         super();
         this.engineSupplier = engineSupplier;
         this.bodySupplier = bodySupplier;
         this.engineStorage = engineStorage;
         this.bodyStorage = bodyStorage;
         this.accessoryStorage = accessoryStorage;
-        this.accessorySupliers = accessorySupliers;
+        this.accessorySuppliers = accessorySuppliers;
+        this.workers = workers;
+        this.carStorage = carStorage;
+        this.dealers = dealers;
+        this.controller = controller;
 
 
         setSize(800, 800);
@@ -118,7 +132,9 @@ public class GUIView extends JFrame {
         accessorySupplierSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent changeEvent) {
-                accessorySupliers.setDelay(accessorySupplierSlider.getValue());
+                for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++) {
+                    accessorySuppliers.setDelayForAll(accessorySupplierSlider.getValue());
+                }
             }
         });
 
@@ -140,7 +156,41 @@ public class GUIView extends JFrame {
 
         accessoryCreatedCounterLabel.setFont(new Font("Arial", Font.BOLD, 14));
         accessoryCreatedCounterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        accessorySupliers.addCreatedListener(this::updateCreatedAccessory);
+
+        accessorySuppliers.addCreatedListener(this::updateCreatedAccessory);
+
+        carStorageSizeLabel = new JLabel("0");
+        carStorageSizeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        carStorageSizeLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        carStorage.addSizeListener(this::updateSizeCar);
+
+        JLabel carSizeStorageTextLabel = new JLabel("Car Storage:");
+
+        JLabel carCreatedCounterTextLabel = new JLabel("Created Cars:");
+
+        carCreatedCounterLabel = new JLabel("0");
+        carCreatedCounterLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        carCreatedCounterLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        workers.addCreatedListener(this::updateCreatedCar);
+
+        JLabel dealersLabel = new JLabel("Delay for Dealers");
+
+        JSlider dealersSlider = new JSlider(0, 3, 0);
+        dealersSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent changeEvent) {
+                for(int i = 0; i < dealers.getDealersCount(); i++) {
+                    dealers.setDelayForAll(dealersSlider.getValue());
+                }
+            }
+        });
+
+        dealersSlider.setValue(3);
+        dealersSlider.setMajorTickSpacing(1);
+        dealersSlider.setPaintTicks(true);
+        dealersSlider.setPaintLabels(true);
+
+        JLabel tasksLabel = new JLabel("Amount of Tasks: ");
 
         panel.add(bodySupplierLabel);
         panel.add(engineSupplierLabel);
@@ -160,7 +210,13 @@ public class GUIView extends JFrame {
         panel.add(accessorySizeStorageTextLabel);
         panel.add(accessorySupplierCounterTextLabel);
         panel.add(accessoryCreatedCounterLabel);
-
+        panel.add(carStorageSizeLabel);
+        panel.add(carSizeStorageTextLabel);
+        panel.add(carCreatedCounterTextLabel);
+        panel.add(carCreatedCounterLabel);
+        panel.add(dealersLabel);
+        panel.add(dealersSlider);
+        panel.add(tasksLabel);
 
         layout.putConstraint(SpringLayout.WEST, engineSupplierLabel, 20, SpringLayout.WEST, panel); //Label for Engine Supplier
         layout.putConstraint(SpringLayout.NORTH, engineSupplierLabel, 40, SpringLayout.NORTH, panel);
@@ -216,6 +272,27 @@ public class GUIView extends JFrame {
         layout.putConstraint(SpringLayout.WEST, accessoryCreatedCounterLabel, 40, SpringLayout.EAST, accessorySizeStorageTextLabel);
         layout.putConstraint(SpringLayout.NORTH, accessoryCreatedCounterLabel, 90, SpringLayout.SOUTH, bodySupplierSlider);
 
+        layout.putConstraint(SpringLayout.WEST, carStorageSizeLabel, 20, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, carStorageSizeLabel, 10, SpringLayout.SOUTH, carSizeStorageTextLabel);
+
+        layout.putConstraint(SpringLayout.WEST, carSizeStorageTextLabel, 20, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, carSizeStorageTextLabel, 60, SpringLayout.SOUTH, accessorySupplierSlider);
+
+        layout.putConstraint(SpringLayout.WEST, carCreatedCounterTextLabel, 40, SpringLayout.EAST, carSizeStorageTextLabel);
+        layout.putConstraint(SpringLayout.NORTH, carCreatedCounterTextLabel, 0, SpringLayout.NORTH, carSizeStorageTextLabel);
+
+        layout.putConstraint(SpringLayout.NORTH, carCreatedCounterLabel, 0, SpringLayout.NORTH, carStorageSizeLabel);
+        layout.putConstraint(SpringLayout.WEST, carCreatedCounterLabel, 0, SpringLayout.WEST, carCreatedCounterTextLabel);
+
+        layout.putConstraint(SpringLayout.WEST, dealersLabel, 20, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, dealersLabel, 60, SpringLayout.SOUTH, carCreatedCounterLabel);
+
+        layout.putConstraint(SpringLayout.WEST, dealersSlider, 20, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, dealersSlider, 10, SpringLayout.SOUTH, dealersLabel);
+
+        layout.putConstraint(SpringLayout.WEST, tasksLabel, 0, SpringLayout.WEST, accessorySizeStorageTextLabel);
+        layout.putConstraint(SpringLayout.NORTH, tasksLabel, 0, SpringLayout.NORTH, carCreatedCounterTextLabel);
+
         this.add(panel);
     }
 
@@ -239,6 +316,14 @@ public class GUIView extends JFrame {
     }
 
     private void updateCreatedAccessory(){
-        accessoryCreatedCounterLabel.setText(Integer.toString((accessorySupliers.getCreatedParts())));
+        accessoryCreatedCounterLabel.setText(Integer.toString((accessorySuppliers.getCreatedParts())));
+    }
+
+    private void updateSizeCar(){
+        carStorageSizeLabel.setText(Integer.toString(carStorage.getNowSize()));
+    }
+
+    private void updateCreatedCar(){
+        carCreatedCounterLabel.setText(Integer.toString(workers.getCreatedParts()));
     }
 }

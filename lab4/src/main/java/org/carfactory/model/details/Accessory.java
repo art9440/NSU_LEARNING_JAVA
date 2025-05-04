@@ -1,8 +1,10 @@
 package org.carfactory.model.details;
 
-public class Accessory extends Part{
+import java.util.concurrent.atomic.AtomicInteger;
 
-    public Accessory(Integer id){
-        super(id);
+public class Accessory extends Part{
+    private static final AtomicInteger idGenerator = new AtomicInteger(1);
+    public Accessory(){
+        super(idGenerator.getAndIncrement());
     }
 }

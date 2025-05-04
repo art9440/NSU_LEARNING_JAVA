@@ -1,11 +1,16 @@
 package org.carfactory.model.factoryinit;
 
+import org.carfactory.model.dealercenter.ThreadpoolDealers;
 import org.carfactory.model.details.Accessory;
 import org.carfactory.model.details.Body;
 import org.carfactory.model.details.Engine;
 import org.carfactory.model.factory.Car;
+import org.carfactory.model.factory.ControllerOfStorageCar;
+import org.carfactory.model.factory.ThreadpoolWorkers;
+import org.carfactory.model.factory.Worker;
 import org.carfactory.model.parseexceptions.ParseConfigException;
 import org.carfactory.model.suppliers.*;
+import org.carfactory.threadpool.Threadpool;
 import org.carfactory.view.GUIView;
 
 import javax.swing.*;
@@ -43,27 +48,45 @@ public class CarFactory {
         Supplier<Engine> engineSupplier = new Supplier<>(engineStorage, Engine.class);
         Supplier<Body> bodySupplier = new Supplier<>(bodyStorage, Body.class);
 
-        ThreadpoolAccessorySuppliers<Accessory> accessorySuppliers = new ThreadpoolAccessorySuppliers<>(accessoryStorage,
-                Accessory.class, Integer.parseInt(configMap.get("AccessorySup")));
+        ControllerOfStorageCar controller = new ControllerOfStorageCar();
+
+        ThreadpoolDealers dealers = new ThreadpoolDealers(Integer.parseInt(configMap.get("Dealers")), carStorage, controller);
+
+        ThreadpoolWorkers workers = new ThreadpoolWorkers(Integer.parseInt(configMap.get("Workers")), carStorage, engineStorage, bodyStorage, accessoryStorage, controller);
+
+        Threadpool<Accessory> accessorySuppliers = new
+                Threadpool<>(Accessory.class, Integer.parseInt(configMap.get("AccessorySup")), accessoryStorage);
 
 
 
         Thread engineSupplierThread = new Thread(engineSupplier);
         Thread bodySupplierThread = new Thread(bodySupplier);
 
+        Thread controllerThread = new Thread(controller);
+
+        for (int i = 0; i < workers.getWorkersCount(); i++) {
+            controller.notifySold();
+        }
+
         for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++){
             accessorySuppliers.startThread(i);
         }
 
+        for(int i = 0; i < workers.getWorkersCount(); i++){
+            workers.startThread(i);
+        }
+
+        for(int i = 0; i < dealers.getDealersCount(); i++){
+            dealers.startThread(i);
+        }
+
         engineSupplierThread.start();
         bodySupplierThread.start();
+        controllerThread.start();
 
 
-        //вот здесь создание всех потоков accessory, workers и dealers
-        //затем одновременный запуск
-        //запуск view
 
-        GUIView view = new GUIView(engineSupplier, bodySupplier, engineStorage, bodyStorage, accessorySuppliers, accessoryStorage);
+        GUIView view = new GUIView(engineSupplier, bodySupplier, engineStorage, bodyStorage, accessorySuppliers, accessoryStorage, workers, carStorage, dealers, controller);
 
         view.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -72,8 +95,16 @@ public class CarFactory {
             public void windowClosing(WindowEvent e) {
                 engineSupplierThread.interrupt();
                 bodySupplierThread.interrupt();
+                controller.stop();
+                controllerThread.interrupt();
                 for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++){
                     accessorySuppliers.stopThread(i);
+                }
+                for(int i = 0; i < workers.getWorkersCount(); i++){
+                    workers.stopThread(i);
+                }
+                for(int i = 0; i <dealers.getDealersCount(); i++){
+                    dealers.stopThread(i);
                 }
                 view.dispose();
             }

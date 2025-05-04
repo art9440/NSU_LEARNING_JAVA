@@ -9,7 +9,6 @@ public class Supplier<T extends Part> implements Runnable {
     private final Class<T> classPart;
     private volatile int delay = 3;
     private int createdParts = 0;
-    private int newID = 1;
     private Runnable listener = new Runnable() {
         @Override
         public void run() {
@@ -36,21 +35,21 @@ public class Supplier<T extends Part> implements Runnable {
         while(!Thread.currentThread().isInterrupted()){
             try {
                 Thread.sleep(delay * 1000L);
-                T part = classPart.getDeclaredConstructor(Integer.class).newInstance(newID);
+                T part = classPart.getDeclaredConstructor().newInstance();
                 createdParts++;
                 notifyCreatedListener();
-                newID++;
-                System.out.println(part.getClass());
+                System.out.println(part.getClass() + "," + part.getID());
                 synchronized (storage) {
                     while (storage.getNowSize() == storage.getSize()){
                         storage.wait();
                     }
                     storage.put(part);
+                    storage.notifyAll();
                 }
 
             } catch (Exception e){
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                break;
             }
         }
     }
