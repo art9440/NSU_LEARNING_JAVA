@@ -31,6 +31,7 @@ public class Storage<T> {
         if(nowSize == size){
             full = true;
         }
+        notifyAll();
     }
 
     public synchronized T get(){
@@ -39,6 +40,7 @@ public class Storage<T> {
         if (nowSize != size){
             full = false;
         }
+        notifyAll();
         return store.remove();
     }
 

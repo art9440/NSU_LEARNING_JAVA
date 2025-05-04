@@ -44,7 +44,6 @@ public class Supplier<T extends Part> implements Runnable {
                         storage.wait();
                     }
                     storage.put(part);
-                    storage.notifyAll();
                 }
 
             } catch (Exception e){
