@@ -35,7 +35,7 @@ public class Dealer implements Runnable {
                         carStorage.wait();
                     }
                     Car car = carStorage.get();
-                    logger.info("Dealer: " + Integer.toString(number) + "; " + "Car ID: " + Integer.toString(car.getID()) + " (" + car.getPartID() + ").");
+                    logger.info("Dealer: " + number + "; " + "Car ID: " + car.getID() + " (" + car.getPartID() + ").");
                     controller.notifySold();
                 }
             }

@@ -1,6 +1,8 @@
 package org.carfactory.model.suppliers;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Storage<T> {
@@ -8,12 +10,8 @@ public class Storage<T> {
     private Queue<T> store = new LinkedList<T>();
     private int nowSize = 0;
     private volatile boolean full = false;
-    private Runnable listener = new Runnable() {
-        @Override
-        public void run() {
+    private final List<Runnable> listeners = new ArrayList<>();
 
-        }
-    };
 
     public Storage(int size){
         this.size = size;
@@ -24,7 +22,7 @@ public class Storage<T> {
     }
 
     public synchronized void put(T detail){
-        //System.out.println(detail.getClass());
+
         store.add(detail);
         nowSize++;
         notifySizeListener();
@@ -50,10 +48,12 @@ public class Storage<T> {
     }
 
     public void addSizeListener(Runnable listener){
-        this.listener = listener;
+        listeners.add(listener);
     }
 
     private void notifySizeListener(){
-        listener.run();
+        for(Runnable listener : listeners){
+            listener.run();
+        }
     }
 }

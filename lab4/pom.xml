@@ -21,7 +21,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>org.carfactory.model.factoryinit.Main</mainClass>  <!-- Убедись, что класс правильный -->
+                    <mainClass>org.carfactory.model.factoryinit.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -30,7 +30,8 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.txt</include>
-                    <include>**/*.png</include><!-- Копируем все .txt файлы -->
+                    <include>**/*.png</include>
+                    <include>**/*.properties</include>
                 </includes>
             </resource>
         </resources>

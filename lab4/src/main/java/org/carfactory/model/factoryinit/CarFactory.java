@@ -36,7 +36,7 @@ public class CarFactory {
             exitApp();
         }
 
-        if (Boolean.getBoolean(configMap.get("LogSales"))) {
+        if (Boolean.parseBoolean(configMap.get("LogSales"))) {
             setupLogger();
         }
 
@@ -48,7 +48,7 @@ public class CarFactory {
         Supplier<Engine> engineSupplier = new Supplier<>(engineStorage, Engine.class);
         Supplier<Body> bodySupplier = new Supplier<>(bodyStorage, Body.class);
 
-        ControllerOfStorageCar controller = new ControllerOfStorageCar();
+        ControllerOfStorageCar controller = new ControllerOfStorageCar(carStorage, Integer.parseInt(configMap.get("Workers")));
 
         ThreadpoolDealers dealers = new ThreadpoolDealers(Integer.parseInt(configMap.get("Dealers")), carStorage, controller);
 
@@ -58,15 +58,11 @@ public class CarFactory {
                 Threadpool<>(Accessory.class, Integer.parseInt(configMap.get("AccessorySup")), accessoryStorage);
 
 
-
         Thread engineSupplierThread = new Thread(engineSupplier);
         Thread bodySupplierThread = new Thread(bodySupplier);
 
         Thread controllerThread = new Thread(controller);
 
-        for (int i = 0; i < workers.getWorkersCount(); i++) {
-            controller.notifySold();
-        }
 
         for(int i = 0; i < accessorySuppliers.getSuppliersCount(); i++){
             accessorySuppliers.startThread(i);
@@ -121,21 +117,18 @@ public class CarFactory {
     }
 
     private static void setupLogger(){
-        try {
-            InputStream configStream = Main.class.getClassLoader().getResourceAsStream("logging.properties");
-            if (configStream == null) {
-                System.err.println("Error: logging.properties not found!");
-            } else {
-                LogManager.getLogManager().readConfiguration(configStream);
-                System.out.println("Config logging is loaded!");
+        try (InputStream in = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream("logging.properties")) {
+            if (in == null) {
+                System.err.println("Error: logging.properties not found on classpath!");
+                return;
             }
-
+            LogManager.getLogManager().readConfiguration(in);
+            System.out.println("Logging config is loaded!");
         } catch (IOException e) {
-            System.err.println("Error logging: " + e.getMessage());
+            System.err.println("Error loading logging config: " + e.getMessage());
         }
     }
 
-    public void onClose() {
-
-    }
 }

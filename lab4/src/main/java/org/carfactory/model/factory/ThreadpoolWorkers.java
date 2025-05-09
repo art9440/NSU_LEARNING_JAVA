@@ -4,7 +4,7 @@ import org.carfactory.model.details.Accessory;
 import org.carfactory.model.details.Body;
 import org.carfactory.model.details.Engine;
 import org.carfactory.model.suppliers.Storage;
-import org.carfactory.model.suppliers.Supplier;
+
 
 public class ThreadpoolWorkers {
     private final Storage<Car> carStorage;
