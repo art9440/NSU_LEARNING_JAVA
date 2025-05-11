@@ -9,7 +9,7 @@ public class Storage<T> {
     private final int size;
     private Queue<T> store = new LinkedList<T>();
     private int nowSize = 0;
-    private volatile boolean full = false;
+
     private final List<Runnable> listeners = new ArrayList<>();
 
 
@@ -21,23 +21,23 @@ public class Storage<T> {
         return size;
     }
 
-    public synchronized void put(T detail){
-
+    public synchronized void put(T detail) throws InterruptedException {
+        while (nowSize == size) {
+            wait();
+        }
         store.add(detail);
         nowSize++;
         notifySizeListener();
-        if(nowSize == size){
-            full = true;
-        }
+
         notifyAll();
     }
 
-    public synchronized T get(){
+    public synchronized T get() throws InterruptedException {
+        while (nowSize == 0) {
+            wait();
+        }
         nowSize--;
         notifySizeListener();
-        if (nowSize != size){
-            full = false;
-        }
         notifyAll();
         return store.remove();
     }

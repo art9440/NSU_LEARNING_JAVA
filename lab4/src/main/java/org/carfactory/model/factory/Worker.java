@@ -38,40 +38,16 @@ public class Worker implements Runnable{
         while(!Thread.currentThread().isInterrupted()){
             try{
                 controller.getBuildTask();
-                synchronized (engineStorage) {
-                    while (engineStorage.getNowSize() == 0){
-                        engineStorage.wait();
-                    }
-                    engine = engineStorage.get();
-                    engineStorage.notifyAll();
-                }
-
-                synchronized (bodyStorage) {
-                    while (bodyStorage.getNowSize() == 0){
-                        bodyStorage.wait();
-                    }
-                    body = bodyStorage.get();
-                    bodyStorage.notifyAll();
-                }
-
-                synchronized (accessoryStorage) {
-                    while (accessoryStorage.getNowSize() == 0){
-                        accessoryStorage.wait();
-                    }
-                    accessory = accessoryStorage.get();
-                    accessoryStorage.notifyAll();
-                }
+                engine = engineStorage.get();
+                body = bodyStorage.get();
+                accessory = accessoryStorage.get();
 
                 Car car = new Car(engine, body, accessory);
                 createdCars++;
                 notifyCreatedListener();
-                synchronized (carStorage) {
-                    while (carStorage.getNowSize() == carStorage.getSize()){
-                        carStorage.wait();
-                    }
-                    carStorage.put(car);
-                    carStorage.notifyAll();
-                }
+
+                carStorage.put(car);
+
             }
             catch (Exception e){
                 Thread.currentThread().interrupt();
