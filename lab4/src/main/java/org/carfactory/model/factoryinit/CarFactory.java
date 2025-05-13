@@ -7,7 +7,6 @@ import org.carfactory.model.details.Engine;
 import org.carfactory.model.factory.Car;
 import org.carfactory.model.factory.ControllerOfStorageCar;
 import org.carfactory.model.factory.ThreadpoolWorkers;
-import org.carfactory.model.factory.Worker;
 import org.carfactory.model.parseexceptions.ParseConfigException;
 import org.carfactory.model.suppliers.*;
 import org.carfactory.threadpool.Threadpool;
