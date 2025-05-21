@@ -21,24 +21,21 @@ public class Client {
 
             Socket socket = new Socket("localhost", Config.getPort());
 
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            DataInputStream  dis = new DataInputStream(socket.getInputStream());
-            dos.writeUTF(protocol);
-            dos.flush();
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.flush();
+            ObjectInputStream  ois = new ObjectInputStream(socket.getInputStream());
+
+            oos.writeObject(protocol);
+            oos.flush();
 
             if ("obj".equals(protocol)) {
-                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-                ObjectOutputStream  oos = new ObjectOutputStream(bos);
-                oos.flush();
-
-                BufferedInputStream  bis = new BufferedInputStream(socket.getInputStream());
-                ObjectInputStream   ois = new ObjectInputStream(bis);
-
                 ClientOBJ client = new ClientOBJ(socket, login, ois, oos);
                 client.start();
             } else {
-                //new ClientXML(socket, login, dis, dos).start();
+                ClientXML client = new ClientXML(socket, login);
+                client.start();
             }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

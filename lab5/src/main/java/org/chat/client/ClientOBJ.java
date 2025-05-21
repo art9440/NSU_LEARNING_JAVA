@@ -18,6 +18,7 @@ public class ClientOBJ implements ClientProtocol{
     private volatile boolean running = true;
     private String sessionId;
 
+
     public ClientOBJ(Socket socket,
                      String login,
                      ObjectInputStream ois,
@@ -72,6 +73,12 @@ public class ClientOBJ implements ClientProtocol{
                     oos.flush();
 
                 } else {
+                    System.out.print("\033[1A");
+                    System.out.print("\033[2K");
+                    System.out.flush();
+
+                    System.out.println("[" + login + "] " + line);
+
                     MessageCommand msg = new MessageCommand();
                     msg.session = sessionId;
                     msg.message = line;
@@ -95,17 +102,23 @@ public class ClientOBJ implements ClientProtocol{
         try {
             while (running) {
                 Object obj = ois.readObject();
+
+                if (obj instanceof Ping) {
+                    Pong pong = new Pong(sessionId);
+                    oos.writeObject(pong);
+                    oos.flush();
+                    continue;
+                }
+
                 if (obj instanceof EventMessage m) {
                     System.out.println(m.message);
                 } else if (obj instanceof UserList list) {
                     System.out.println("Users:");
                     list.users.forEach(user -> System.out.println("- " + user));
                 } else if (obj instanceof Success) {
-                    System.out.println("OK");
+                    //System.out.println("OK");
                 } else if (obj instanceof Error e) {
                     System.err.println("Error: " + e.message);
-                } else if (obj instanceof Ping) {
-                    // no-op
                 } else {
                     System.out.println("Unknown object: " + obj);
                 }

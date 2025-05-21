@@ -9,7 +9,19 @@ public class Chat {
     private static final int HISTORY_SIZE = 10;
     private final Deque<String> history = new ArrayDeque<>();
     private final Set<ProtocolHandler> clients = ConcurrentHashMap.newKeySet();
-    private final ExecutorService broadcastPool = Executors.newCachedThreadPool();
+
+    private final ExecutorService broadcaster =
+            Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "chat-broadcaster");
+                t.setDaemon(true);
+                return t;
+            });
+
+    private final ExecutorService senderPool = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "chat-sender");
+        t.setDaemon(true);
+        return t;
+    });
 
     public void register(ProtocolHandler h){
         clients.add(h);
@@ -19,15 +31,20 @@ public class Chat {
         clients.remove(h);
     }
 
-    public void broadcast(String message) {
+    public void broadcastExcept(String message, ProtocolHandler except) {
         synchronized (history) {
             if (history.size() == HISTORY_SIZE) history.removeFirst();
             history.addLast(message);
         }
-
         for (ProtocolHandler h : clients) {
-            broadcastPool.submit(() -> h.sendRaw(message));
+            if (h != except) {
+                senderPool.submit(() -> h.sendRaw(message));
+            }
         }
+    }
+
+    public void broadcast(String message) {
+        broadcastExcept(message, null);
     }
 
     public List<String> getHistory() {
@@ -39,7 +56,7 @@ public class Chat {
     public List<String> getUserNames() {
         List<String> names = new ArrayList<>();
         for (ProtocolHandler h : clients) {
-            names.add(h.getSessionId());
+            names.add(h.getName());
         }
         return names;
     }

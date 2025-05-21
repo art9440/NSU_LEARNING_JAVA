@@ -19,39 +19,31 @@ public class ClientHandler implements Runnable {
     public void run() {
         ProtocolHandler handler = null;
         try {
-            // 1) Читаем протокол текстом
-            DataInputStream  dis  = new DataInputStream(socket.getInputStream());
-            DataOutputStream dos  = new DataOutputStream(socket.getOutputStream());
-            String protocol = dis.readUTF();
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.flush();
+            ObjectInputStream  ois = new ObjectInputStream(socket.getInputStream());
 
-            // 2) В зависимости от protocol создаём нужный handler
+            String protocol = (String) ois.readObject();
+
             if ("obj".equalsIgnoreCase(protocol)) {
-                // Оборачиваем в буферизированные Object-потоки
-                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-                ObjectOutputStream  oos = new ObjectOutputStream(bos);
-                oos.flush();
-
-                BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-                ObjectInputStream  ois = new ObjectInputStream(bis);
-
                 handler = new HandlerOBJ(socket, chat, ois, oos);
             }
             else if ("xml".equalsIgnoreCase(protocol)) {
                 handler = new HandlerXML(socket, chat);
             }
             else {
-                dos.writeUTF("Unknown protocol: " + protocol);
-                dos.flush();
+
+                oos.writeObject("Unknown protocol: " + protocol);
+                oos.flush();
                 socket.close();
                 return;
             }
 
-            // 3) Регистрируем и запускаем основной цикл
             chat.register(handler);
             handler.handle();
 
         } catch (Exception e) {
-            System.err.println("Error with ClientHandler: " + e.getMessage());
+            System.err.println("Error in ClientHandler: " + e.getMessage());
         } finally {
             if (handler != null) chat.unregister(handler);
             try { socket.close(); } catch (IOException ignored) {}

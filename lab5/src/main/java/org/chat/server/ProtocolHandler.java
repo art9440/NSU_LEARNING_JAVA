@@ -7,8 +7,7 @@ import java.io.OutputStream;
 public interface ProtocolHandler {
 
     void handle();
-    void sendPing() throws Exception;
     void sendRaw(String message);
-    String getSessionId();
+    String getName();
 
 }
