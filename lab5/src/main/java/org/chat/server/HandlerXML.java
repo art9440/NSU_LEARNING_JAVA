@@ -74,7 +74,7 @@ public class HandlerXML implements ProtocolHandler{
                         this.name = doc.getElementsByTagName("login").item(0).getTextContent();
                         sendSuccess();
                         for (String msg : chat.getHistory()) {
-                            sendMessage(msg);
+                            sendRaw(msg);
                         }
                     }
                 }
