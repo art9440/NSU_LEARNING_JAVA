@@ -13,198 +13,181 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientXML implements ClientProtocol{
+public class ClientXML implements ClientProtocol {
     private final Socket socket;
     private final String login;
-    private  DataOutputStream dos;
-    private DataInputStream dis;
 
-    private volatile boolean running = true;
-    private String sessionId;
+    private DataOutputStream dos;
+    private DataInputStream  dis;
+
+    private volatile boolean running   = true;
+    private String           sessionId;
 
     public ClientXML(Socket socket, String login) {
         this.socket = socket;
-        this.login = login;
+        this.login  = login;
     }
 
     @Override
-    public void start(){
+    public void start() {
         try {
+
             dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
+
             sendLogin();
-
-            int len = dis.readInt();
-            byte[] byteMessage = new byte[len];
-            dis.readFully(byteMessage);
-
             DocumentBuilder db = XMLUtil.dbf.newDocumentBuilder();
-            Document doc = db.parse(new ByteArrayInputStream(byteMessage));
-
-            Element root = doc.getDocumentElement();
-            String tag = root.getTagName();
-
-            switch (tag){
-                case "Success" -> {
-                    sessionId = doc.getElementsByTagName("session").item(0).getTextContent();
-                    System.out.println("Successfully log in, sessionId=" + sessionId);
-                }
-                case "Error" -> {
-                    System.err.println("Error while entering: " + doc.getElementsByTagName("message").item(0).
-                            getTextContent());
-                    return;
-                }
-                default -> {
-                    System.err.println("Unknown answer : " + tag);
-                    return;
-                }
+            Document respDoc = db.parse(new ByteArrayInputStream(readMessage()));
+            String respTag = respDoc.getDocumentElement().getTagName();
+            if ("Success".equals(respTag)) {
+                sessionId = respDoc.getElementsByTagName("session")
+                        .item(0).getTextContent();
+                System.out.println("Successfully log in, sessionId=" + sessionId);
+            } else if ("Error".equals(respTag)) {
+                String err = respDoc.getElementsByTagName("message")
+                        .item(0).getTextContent();
+                System.err.println("Error while entering: " + err);
+                return;
+            } else {
+                System.err.println("Unknown answer: " + respTag);
+                return;
             }
 
-            Thread readerThread = new Thread(this::receiveLoop, "client-receiver");
-            readerThread.start();
+
+            Thread reader = new Thread(this::receiveLoop, "client-receiver");
+            reader.setDaemon(true);
+            reader.start();
+
 
             Scanner scanner = new Scanner(System.in);
-
-            while (running){
+            while (running) {
                 String line = scanner.nextLine().trim();
                 if (line.equalsIgnoreCase("/exit")) {
                     sendLogout();
                     running = false;
-                }
-                else if(line.equalsIgnoreCase("/list")){
-                    sendListCommand();
-                }
-                else{
+
+                } else if (line.equalsIgnoreCase("/list")) {
+                    sendList();
+
+                } else {
+
                     System.out.print("\033[1A");
                     System.out.print("\033[2K");
                     System.out.flush();
-
                     System.out.println("[" + login + "] " + line);
 
                     sendMessage(line);
                 }
             }
-
-            readerThread.join();
+            reader.join();
 
         } catch (Exception e) {
             System.err.println("Client error: " + e.getMessage());
         } finally {
-            try {
-                socket.close();
-            } catch (IOException ignored) {
-            }
+            try { socket.close(); } catch (IOException ignored) {}
         }
     }
 
-    private void sendLogin() throws ParserConfigurationException, TransformerException, IOException {
-        Document doc = XMLUtil.newDocument();
-
-        Element root = doc.createElement("LoginCommand");
-        doc.appendChild(root);
-
-        XMLUtil.addTextElement(doc, root, "login", login);
-        XMLUtil.addTextElement(doc, root, "type", "xml");
-
-        byte[] bytesXml = XMLUtil.toBytes(doc);
-
-        dos.writeInt(bytesXml.length);
-        dos.write(bytesXml);
-        dos.flush();
-    }
-
-    private void sendLogout() throws ParserConfigurationException, TransformerException, IOException {
-        Document doc = XMLUtil.newDocument();
-
-        Element root = doc.createElement("LogoutCommand");
-        doc.appendChild(root);
-
-        XMLUtil.addTextElement(doc, root, "session", sessionId);
-        byte[] bytesXml = XMLUtil.toBytes(doc);
-
-        dos.writeInt(bytesXml.length);
-        dos.write(bytesXml);
-        dos.flush();
-    }
-
-    private void sendListCommand() throws ParserConfigurationException, TransformerException, IOException {
-        Document doc = XMLUtil.newDocument();
-
-        Element root = doc.createElement("ListCommand");
-        doc.appendChild(root);
-
-        XMLUtil.addTextElement(doc, root, "session", sessionId);
-        byte[] bytesXml = XMLUtil.toBytes(doc);
-
-        dos.writeInt(bytesXml.length);
-        dos.write(bytesXml);
-        dos.flush();
-    }
-
-    private void sendMessage(String line) throws ParserConfigurationException, TransformerException, IOException {
-        Document doc = XMLUtil.newDocument();
-
-        Element root = doc.createElement("MessageCommand");
-        doc.appendChild(root);
-
-        XMLUtil.addTextElement(doc, root, "session", sessionId);
-        XMLUtil.addTextElement(doc, root, "message", line);
-
-        byte[] bytesXml = XMLUtil.toBytes(doc);
-
-        dos.writeInt(bytesXml.length);
-        dos.write(bytesXml);
-        dos.flush();
-    }
-
-
     private void receiveLoop() {
-        try{
-            while(running) {
-                int len = dis.readInt();
-                byte[] byteMessage = new byte[len];
-                dis.readFully(byteMessage);
+        try {
+            DocumentBuilder db = XMLUtil.dbf.newDocumentBuilder();
+            while (running) {
+                byte[] raw = readMessage();
+                Document doc = db.parse(new ByteArrayInputStream(raw));
+                String tag  = doc.getDocumentElement().getTagName();
 
-                DocumentBuilder db = XMLUtil.dbf.newDocumentBuilder();
-                Document doc = db.parse(new ByteArrayInputStream(byteMessage));
-
-                Element root = doc.getDocumentElement();
-                String tag = root.getTagName();
-
-                if (tag.equals("Ping")) {
-                    Document docPong = XMLUtil.newDocument();
-
-                    Element rootPong = docPong.createElement("Pong");
-                    docPong.appendChild(rootPong);
-
-                    byte[] bytesXml = XMLUtil.toBytes(docPong);
-
-                    dos.writeInt(bytesXml.length);
-                    dos.write(bytesXml);
-                    dos.flush();
+                if ("Ping".equals(tag)) {
+                    sendPong();
+                    continue;
                 }
 
                 switch (tag) {
-                    case "EventMessage", "Error" -> {
-                        System.out.println(doc.getElementsByTagName("message").item(0).
-                                getTextContent());
+                    case "EventMessage" -> {
+                        String msg = doc.getElementsByTagName("message")
+                                .item(0).getTextContent();
+                        System.out.println(msg);
                     }
                     case "UserList" -> {
-
+                        System.out.println("Users:");
+                        var nl = doc.getElementsByTagName("user");
+                        for (int i = 0; i < nl.getLength(); i++) {
+                            System.out.println("- " + nl.item(i).getTextContent());
+                        }
                     }
-                    case "Success" ->{
-                        //Nothing
+                    case "Error" -> {
+                        String err = doc.getElementsByTagName("message")
+                                .item(0).getTextContent();
+                        System.err.println("Error: " + err);
+                    }
+                    case "Success" -> {
+
                     }
                     default -> {
-                        System.out.println("Unknown object: " + tag);
+                        System.out.println("Unknown XML tag: " + tag);
                     }
-
                 }
             }
         } catch (Exception e) {
-            System.err.println("Disconnection " + e.getMessage());
+            System.err.println("Disconnection: " + e.getMessage());
+            running = false;
         }
     }
 
+    private byte[] readMessage() throws IOException {
+        int len = dis.readInt();
+        byte[] buf = new byte[len];
+        dis.readFully(buf);
+        return buf;
+    }
+
+    private void sendLogin() throws Exception {
+        Document doc = XMLUtil.newDocument();
+        Element root = doc.createElement("LoginCommand");
+        doc.appendChild(root);
+        XMLUtil.addTextElement(doc, root, "login", login);
+        XMLUtil.addTextElement(doc, root, "type",  "xml");
+        sendDocument(doc);
+    }
+
+    private void sendLogout() throws Exception {
+        Document doc = XMLUtil.newDocument();
+        Element root = doc.createElement("LogoutCommand");
+        doc.appendChild(root);
+        XMLUtil.addTextElement(doc, root, "session", sessionId);
+        sendDocument(doc);
+    }
+
+    private void sendList() throws Exception {
+        Document doc = XMLUtil.newDocument();
+        Element root = doc.createElement("ListCommand");
+        doc.appendChild(root);
+        XMLUtil.addTextElement(doc, root, "session", sessionId);
+        sendDocument(doc);
+    }
+
+    private void sendMessage(String text) throws Exception {
+        Document doc = XMLUtil.newDocument();
+        Element root = doc.createElement("MessageCommand");
+        doc.appendChild(root);
+        XMLUtil.addTextElement(doc, root, "session", sessionId);
+        XMLUtil.addTextElement(doc, root, "message", text);
+        sendDocument(doc);
+    }
+
+
+    private void sendPong() throws Exception {
+        Document doc = XMLUtil.newDocument();
+        Element root = doc.createElement("Pong");
+        doc.appendChild(root);
+        XMLUtil.addTextElement(doc, root, "session", sessionId);
+        sendDocument(doc);
+    }
+
+    private void sendDocument(Document doc) throws IOException, TransformerException {
+        byte[] bytes = XMLUtil.toBytes(doc);
+        dos.writeInt(bytes.length);
+        dos.write(bytes);
+        dos.flush();
+    }
 }

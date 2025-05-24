@@ -19,22 +19,26 @@ public class ClientHandler implements Runnable {
     public void run() {
         ProtocolHandler handler = null;
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.flush();
-            ObjectInputStream  ois = new ObjectInputStream(socket.getInputStream());
 
-            String protocol = (String) ois.readObject();
+            DataInputStream  dis = new DataInputStream(socket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            String protocol = dis.readUTF();
 
             if ("obj".equalsIgnoreCase(protocol)) {
-                handler = new HandlerOBJ(socket, chat, ois, oos);
-            }
-            else if ("xml".equalsIgnoreCase(protocol)) {
-                handler = new HandlerXML(socket, chat);
-            }
-            else {
 
-                oos.writeObject("Unknown protocol: " + protocol);
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.flush();
+                ObjectInputStream  ois = new ObjectInputStream(socket.getInputStream());
+
+                handler = new HandlerOBJ(socket, chat, ois, oos);
+
+            } else if ("xml".equalsIgnoreCase(protocol)) {
+
+                handler = new HandlerXML(socket, chat);
+
+            } else {
+                dos.writeUTF("ERROR Unknown protocol: " + protocol);
+                dos.flush();
                 socket.close();
                 return;
             }
