@@ -49,16 +49,12 @@ public class HandlerXML implements ProtocolHandler {
     @Override
     public void handle() {
         try {
-            // 1) настроить length-prefixed XML-потоки
             dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
-            // 2) запустить heartbeat
             startHeartbeat();
 
-            // 3) основной цикл команд
             while (running) {
-                // прочитать одно XML-сообщение
                 int len = dis.readInt();
                 byte[] buf = new byte[len];
                 dis.readFully(buf);
@@ -68,7 +64,6 @@ public class HandlerXML implements ProtocolHandler {
                 Element         root= doc.getDocumentElement();
                 String          tag = root.getTagName();
 
-                // Pong — только обновляем таймер
                 if ("Pong".equals(tag)) {
                     String sess = doc.getElementsByTagName("session")
                             .item(0).getTextContent();
@@ -78,7 +73,6 @@ public class HandlerXML implements ProtocolHandler {
                     continue;
                 }
 
-                // всё остальное — реальная активность
                 lastActivity = System.currentTimeMillis();
 
                 switch (tag) {
@@ -133,7 +127,6 @@ public class HandlerXML implements ProtocolHandler {
             sendError("Invalid session");
             return;
         }
-        // сформировать UserList XML
         Document ulDoc = XMLUtil.newDocument();
         Element root   = ulDoc.createElement("UserList");
         ulDoc.appendChild(root);
@@ -156,7 +149,7 @@ public class HandlerXML implements ProtocolHandler {
     }
 
     private void startHeartbeat() {
-        // idle timeout
+
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             if (System.currentTimeMillis() - lastActivity > IDLE_TIMEOUT_MS) {
@@ -164,7 +157,6 @@ public class HandlerXML implements ProtocolHandler {
             }
         }, 1, 1, TimeUnit.SECONDS);
 
-        // send Ping
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             try {
@@ -176,7 +168,6 @@ public class HandlerXML implements ProtocolHandler {
             }
         }, 1, 1, TimeUnit.SECONDS);
 
-        // pong timeout
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             if (System.currentTimeMillis() - lastPongTime > PONG_TIMEOUT_MS) {
