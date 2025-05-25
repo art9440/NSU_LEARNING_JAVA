@@ -1,13 +1,13 @@
 package org.chat.client;
 
-import org.chat.common.messagesOBJ.LogoutCommand;
+
 import org.chat.common.messagesOBJ.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
+
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.net.Socket;

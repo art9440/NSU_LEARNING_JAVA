@@ -1,12 +1,10 @@
 package org.chat.server;
 
-import org.chat.common.messagesOBJ.EventMessage;
 import org.chat.common.messagesOBJ.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.Socket;
 import java.util.UUID;

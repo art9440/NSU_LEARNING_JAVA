@@ -2,9 +2,7 @@ package org.chat.server;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
 
 public class ClientHandler implements Runnable {
     private final Socket socket;
