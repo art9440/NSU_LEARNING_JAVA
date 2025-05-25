@@ -23,13 +23,20 @@ public class HandlerOBJ implements ProtocolHandler {
     private volatile long lastActivity = System.currentTimeMillis();
     private volatile long lastPongTime  = System.currentTimeMillis();
 
-    private static final long IDLE_TIMEOUT_MS = 100_000L;  // 100 с без «реальных» сообщений
-    private static final long PONG_TIMEOUT_MS = 10_000L;   // 10 с без ответа на ping
+    private static final long IDLE_TIMEOUT_MS = 100_000L;
+    private static final long PONG_TIMEOUT_MS = 10_000L;
 
     private final AtomicBoolean disconnected = new AtomicBoolean(false);
 
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(2);
+
+    private final ExecutorService sendExecutor =
+            Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "send-to-" + sessionId);
+                t.setDaemon(true);
+                return t;
+            });
 
     public HandlerOBJ(Socket socket, Chat chat,
                       ObjectInputStream ois, ObjectOutputStream oos) {
@@ -78,6 +85,7 @@ public class HandlerOBJ implements ProtocolHandler {
         try { socket.close(); } catch (IOException ignored) {}
 
         scheduler.shutdownNow();
+        sendExecutor.shutdownNow();
     }
 
     @Override
@@ -144,11 +152,14 @@ public class HandlerOBJ implements ProtocolHandler {
 
     @Override
     public synchronized void  sendRaw(String message) {
-        try {
-            sendObject(new EventMessage(message));
-        } catch (IOException e) {
-            System.err.println("Failed to send EventMessage to " + name + ": " + e.getMessage());
-        }
+        sendExecutor.submit(() -> {
+            try {
+                oos.writeObject(new EventMessage(message));
+                oos.flush();
+            } catch (IOException e) {
+                System.err.println("Failed to send to " + name + ": " + e);
+            }
+        });
     }
 
     private void sendObject(Object obj) throws IOException {

@@ -9,15 +9,15 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientOBJ implements ClientProtocol{
+public class ClientOBJ implements ClientProtocol {
     private final Socket socket;
     private final String login;
     private final ObjectInputStream ois;
     private final ObjectOutputStream oos;
 
-    private volatile boolean running = true;
+    private volatile boolean running  = true;
+    private volatile boolean skipPing = false;
     private String sessionId;
-
 
     public ClientOBJ(Socket socket,
                      String login,
@@ -35,7 +35,7 @@ public class ClientOBJ implements ClientProtocol{
 
             LoginCommand loginCmd = new LoginCommand();
             loginCmd.login = login;
-            loginCmd.type = "obj";
+            loginCmd.type  = "obj";
             oos.writeObject(loginCmd);
             oos.flush();
 
@@ -59,6 +59,29 @@ public class ClientOBJ implements ClientProtocol{
             Scanner scanner = new Scanner(System.in);
             while (running) {
                 String line = scanner.nextLine().trim();
+                if (line.isEmpty()) continue;
+
+
+                if (line.startsWith("/pause")) {
+                    String[] parts = line.split("\\s+", 2);
+                    int secs = 10;
+                    if (parts.length == 2) {
+                        try { secs = Integer.parseInt(parts[1]); }
+                        catch (NumberFormatException ignored) {}
+                    }
+                    System.out.println("Pausing ping-response for " + secs + " seconds...");
+                    skipPing = true;
+                    int finalSecs = secs;
+                    new Thread(() -> {
+                        try { Thread.sleep(finalSecs * 1000L); }
+                        catch (InterruptedException ignored) {}
+                        skipPing = false;
+                        System.out.println("Resuming ping-response.");
+                    }, "pause-timer").start();
+                    continue;
+                }
+
+
                 if (line.equalsIgnoreCase("/exit")) {
                     LogoutCommand logout = new LogoutCommand();
                     logout.session = sessionId;
@@ -87,7 +110,6 @@ public class ClientOBJ implements ClientProtocol{
                 }
             }
 
-
             readerThread.join();
 
         } catch (Exception ex) {
@@ -97,16 +119,17 @@ public class ClientOBJ implements ClientProtocol{
         }
     }
 
-
     private void receiveLoop() {
         try {
             while (running) {
                 Object obj = ois.readObject();
 
                 if (obj instanceof Ping) {
-                    Pong pong = new Pong(sessionId);
-                    oos.writeObject(pong);
-                    oos.flush();
+
+                    if (!skipPing) {
+                        oos.writeObject(new Pong(sessionId));
+                        oos.flush();
+                    }
                     continue;
                 }
 

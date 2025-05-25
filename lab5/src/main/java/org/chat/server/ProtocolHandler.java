@@ -9,5 +9,4 @@ public interface ProtocolHandler {
     void handle();
     void sendRaw(String message);
     String getName();
-
 }

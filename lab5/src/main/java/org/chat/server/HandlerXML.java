@@ -10,6 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.Socket;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,13 @@ public class HandlerXML implements ProtocolHandler {
         this.socket = socket;
         this.chat   = chat;
     }
+
+    private final ExecutorService sendExecutor =
+            Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "send-to-" + sessionId);
+                t.setDaemon(true);
+                return t;
+            });
 
     @Override
     public void handle() {
@@ -93,16 +101,16 @@ public class HandlerXML implements ProtocolHandler {
     }
 
     private void handleLogin(Document doc) throws Exception {
-        // получить имя
+
         name = doc.getElementsByTagName("login")
                 .item(0).getTextContent();
-        // 1) отправить Success
+
         sendSuccess();
-        // 2) отправить историю
+
         for (String msg : chat.getHistory()) {
             sendRaw(msg);
         }
-        // 3) уведомить остальных
+
         chat.broadcastExcept("[SERVER] " + name + " has joined the chat", this);
     }
 
@@ -199,6 +207,7 @@ public class HandlerXML implements ProtocolHandler {
 
     @Override
     public synchronized void sendRaw(String message) {
+        sendExecutor.submit(() -> {
         try {
             Document doc = XMLUtil.newDocument();
             Element root = doc.createElement("EventMessage");
@@ -207,7 +216,7 @@ public class HandlerXML implements ProtocolHandler {
             sendDocument(doc);
         } catch (Exception e) {
             System.err.println("sendRaw error: " + e.getMessage());
-        }
+        }});
     }
 
     private void sendDocument(Document doc) throws Exception {
@@ -227,6 +236,7 @@ public class HandlerXML implements ProtocolHandler {
     private void cleanup() {
         try { socket.close(); } catch (IOException ignored) {}
         scheduler.shutdownNow();
+        sendExecutor.shutdownNow();
         chat.unregister(this);
         chat.broadcast("[SERVER] " + name + " disconnected");
     }

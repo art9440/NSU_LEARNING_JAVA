@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 public class Client {
     public void startInteractive() {
+        long pid = ProcessHandle.current().pid();
+        System.out.println("PID = " + pid);
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Login: ");
             String login = scanner.nextLine().trim();
