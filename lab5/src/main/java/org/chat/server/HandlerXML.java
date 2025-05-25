@@ -8,10 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import java.io.*;
 import java.net.Socket;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HandlerXML implements ProtocolHandler {
@@ -34,17 +31,18 @@ public class HandlerXML implements ProtocolHandler {
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(2);
 
-    public HandlerXML(Socket socket, Chat chat) {
-        this.socket = socket;
-        this.chat   = chat;
-    }
-
     private final ExecutorService sendExecutor =
             Executors.newSingleThreadExecutor(r -> {
-                Thread t = new Thread(r, "send-to-" + sessionId);
+                Thread t = new Thread(r, "xml-sender-" + sessionId);
                 t.setDaemon(true);
                 return t;
             });
+
+    public HandlerXML(Socket socket, Chat chat) {
+        this.socket = socket;
+        this.chat   = chat;
+        log("[CONNECTED] session=%s from %s", sessionId, socket.getRemoteSocketAddress());
+    }
 
     @Override
     public void handle() {
@@ -61,14 +59,15 @@ public class HandlerXML implements ProtocolHandler {
 
                 DocumentBuilder db  = XMLUtil.dbf.newDocumentBuilder();
                 Document        doc = db.parse(new ByteArrayInputStream(buf));
-                Element         root= doc.getDocumentElement();
-                String          tag = root.getTagName();
+                String tag = doc.getDocumentElement().getTagName();
+                log("[RECV] %s ← %s", name, tag);
 
                 if ("Pong".equals(tag)) {
                     String sess = doc.getElementsByTagName("session")
                             .item(0).getTextContent();
                     if (sessionId.equals(sess)) {
                         lastPongTime = System.currentTimeMillis();
+                        log("[PONG] received from %s", name);
                     }
                     continue;
                 }
@@ -76,26 +75,27 @@ public class HandlerXML implements ProtocolHandler {
                 lastActivity = System.currentTimeMillis();
 
                 switch (tag) {
-                    case "LoginCommand" -> handleLogin(doc);
-                    case "MessageCommand"-> handleMessage(doc);
-                    case "ListCommand"   -> handleList(doc);
-                    case "LogoutCommand" -> { handleLogout(doc); return; }
-                    default              -> sendError("Unknown command: " + tag);
+                    case "LoginCommand"   -> handleLogin(doc);
+                    case "MessageCommand" -> handleMessage(doc);
+                    case "ListCommand"    -> handleList(doc);
+                    case "LogoutCommand"  -> { handleLogout(doc); return; }
+                    default               -> {
+                        log("[ERROR] Unknown command from %s: %s", name, tag);
+                        sendError("Unknown command: " + tag);
+                    }
                 }
             }
         } catch (Exception e) {
-            if (running) {
-                System.err.println("HandlerXML error: " + e.getMessage());
-            }
+            if (running) log("[ERROR] HandlerXML for %s: %s", name, e.getMessage());
         } finally {
             cleanup();
         }
     }
 
     private void handleLogin(Document doc) throws Exception {
-
         name = doc.getElementsByTagName("login")
                 .item(0).getTextContent();
+        log("[LOGIN] session=%s as user=%s", sessionId, name);
 
         sendSuccess();
 
@@ -110,11 +110,14 @@ public class HandlerXML implements ProtocolHandler {
         String sess = doc.getElementsByTagName("session")
                 .item(0).getTextContent();
         if (!sessionId.equals(sess)) {
+            log("[ERROR] Invalid session in MessageCommand from %s", name);
             sendError("Invalid session");
             return;
         }
         String text = doc.getElementsByTagName("message")
                 .item(0).getTextContent();
+        log("[MESSAGE] from %s: %s", name, text);
+
         String full = "[" + name + "] " + text;
         chat.broadcastExcept(full, this);
         sendSuccess();
@@ -124,9 +127,12 @@ public class HandlerXML implements ProtocolHandler {
         String sess = doc.getElementsByTagName("session")
                 .item(0).getTextContent();
         if (!sessionId.equals(sess)) {
+            log("[ERROR] Invalid session in ListCommand from %s", name);
             sendError("Invalid session");
             return;
         }
+        log("[LIST] requested by %s", name);
+
         Document ulDoc = XMLUtil.newDocument();
         Element root   = ulDoc.createElement("UserList");
         ulDoc.appendChild(root);
@@ -140,16 +146,18 @@ public class HandlerXML implements ProtocolHandler {
         String sess = doc.getElementsByTagName("session")
                 .item(0).getTextContent();
         if (!sessionId.equals(sess)) {
+            log("[ERROR] Invalid session in LogoutCommand from %s", name);
             sendError("Invalid session");
             return;
         }
+        log("[LOGOUT] from %s", name);
         sendSuccess();
-
+        disconnect("client requested logout");
         running = false;
     }
 
     private void startHeartbeat() {
-
+        // idle timeout
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             if (System.currentTimeMillis() - lastActivity > IDLE_TIMEOUT_MS) {
@@ -157,17 +165,20 @@ public class HandlerXML implements ProtocolHandler {
             }
         }, 1, 1, TimeUnit.SECONDS);
 
+        // send ping
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             try {
                 Document doc = XMLUtil.newDocument();
                 doc.appendChild(doc.createElement("Ping"));
                 sendDocument(doc);
+                log("[PING SENT] to %s", name);
             } catch (Exception e) {
-                disconnect("ping failed: " + e.getMessage());
+                disconnect("ping send failed: " + e.getMessage());
             }
         }, 1, 1, TimeUnit.SECONDS);
 
+        // pong timeout
         scheduler.scheduleAtFixedRate(() -> {
             if (!running) return;
             if (System.currentTimeMillis() - lastPongTime > PONG_TIMEOUT_MS) {
@@ -182,6 +193,7 @@ public class HandlerXML implements ProtocolHandler {
         doc.appendChild(root);
         XMLUtil.addTextElement(doc, root, "session", sessionId);
         sendDocument(doc);
+        log("[SUCCESS] sent to %s", name);
     }
 
     private void sendError(String msg) {
@@ -191,21 +203,24 @@ public class HandlerXML implements ProtocolHandler {
             doc.appendChild(root);
             XMLUtil.addTextElement(doc, root, "message", msg);
             sendDocument(doc);
+            log("[ERROR] sent to %s: %s", name, msg);
         } catch (Exception ignored) {}
     }
 
     @Override
     public synchronized void sendRaw(String message) {
         sendExecutor.submit(() -> {
-        try {
-            Document doc = XMLUtil.newDocument();
-            Element root = doc.createElement("EventMessage");
-            doc.appendChild(root);
-            XMLUtil.addTextElement(doc, root, "message", message);
-            sendDocument(doc);
-        } catch (Exception e) {
-            System.err.println("sendRaw error: " + e.getMessage());
-        }});
+            try {
+                Document doc = XMLUtil.newDocument();
+                Element root = doc.createElement("EventMessage");
+                doc.appendChild(root);
+                XMLUtil.addTextElement(doc, root, "message", message);
+                sendDocument(doc);
+                log("[SEND] to %s: %s", name, message);
+            } catch (Exception e) {
+                log("[ERROR] sendRaw to %s: %s", name, e.getMessage());
+            }
+        });
     }
 
     private void sendDocument(Document doc) throws Exception {
@@ -217,8 +232,10 @@ public class HandlerXML implements ProtocolHandler {
 
     private void disconnect(String reason) {
         if (!disconnected.compareAndSet(false, true)) return;
-        System.out.println("Disconnecting " + name + ": " + reason);
+        log("[DISCONNECTING] %s: %s", name, reason);
         running = false;
+        log("[UNREGISTERED] %s", name);
+        chat.broadcast("[SERVER] " + name + " disconnected");
         cleanup();
     }
 
@@ -227,12 +244,14 @@ public class HandlerXML implements ProtocolHandler {
         scheduler.shutdownNow();
         sendExecutor.shutdownNow();
         chat.unregister(this);
-        chat.broadcast("[SERVER] " + name + " disconnected");
     }
-
 
     @Override
     public String getName() {
         return name;
+    }
+
+    private void log(String fmt, Object... args) {
+        System.out.printf((fmt.endsWith("%n") ? fmt : fmt + "%n"), args);
     }
 }

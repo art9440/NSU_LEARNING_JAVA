@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class ClientXML implements ClientProtocol {
     private final Socket socket;
     private final String login;
+    private final Scanner scanner = new Scanner(System.in);
 
     private DataOutputStream dos;
     private DataInputStream  dis;
@@ -60,7 +61,7 @@ public class ClientXML implements ClientProtocol {
             reader.start();
 
 
-            Scanner scanner = new Scanner(System.in);
+
             while (running) {
                 String line = scanner.nextLine().trim();
                 if (line.equalsIgnoreCase("/exit")) {
@@ -85,6 +86,7 @@ public class ClientXML implements ClientProtocol {
         } catch (Exception e) {
             System.err.println("Client error: " + e.getMessage());
         } finally {
+            scanner.close();
             try { socket.close(); } catch (IOException ignored) {}
         }
     }
@@ -129,8 +131,13 @@ public class ClientXML implements ClientProtocol {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Disconnection: " + e.getMessage());
+            System.err.println("Disconnection...");
             running = false;
+            try {
+                socket.close();
+                System.in.close();
+            } catch (Exception ex) {
+            }
         }
     }
 

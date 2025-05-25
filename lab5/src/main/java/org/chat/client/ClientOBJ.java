@@ -14,6 +14,7 @@ public class ClientOBJ implements ClientProtocol {
     private final String login;
     private final ObjectInputStream ois;
     private final ObjectOutputStream oos;
+    private final Scanner scanner = new Scanner(System.in);
 
     private volatile boolean running  = true;
     private volatile boolean skipPing = false;
@@ -56,7 +57,7 @@ public class ClientOBJ implements ClientProtocol {
             readerThread.start();
 
 
-            Scanner scanner = new Scanner(System.in);
+
             while (running) {
                 String line = scanner.nextLine().trim();
                 if (line.isEmpty()) continue;
@@ -115,6 +116,7 @@ public class ClientOBJ implements ClientProtocol {
         } catch (Exception ex) {
             System.err.println("Client error: " + ex.getMessage());
         } finally {
+            scanner.close();
             try { socket.close(); } catch (IOException ignored) {}
         }
     }
@@ -147,7 +149,15 @@ public class ClientOBJ implements ClientProtocol {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Disconnection " + e.getMessage());
+            System.err.println("Disconnection... ");
+        }
+        finally {
+            running = false;
+            try {
+                socket.close();
+                scanner.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 }
