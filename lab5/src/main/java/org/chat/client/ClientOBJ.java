@@ -101,7 +101,6 @@ public class ClientOBJ implements ClientProtocol {
                     System.out.print("\033[2K");
                     System.out.flush();
 
-                    System.out.println("[" + login + "] " + line);
 
                     MessageCommand msg = new MessageCommand();
                     msg.session = sessionId;

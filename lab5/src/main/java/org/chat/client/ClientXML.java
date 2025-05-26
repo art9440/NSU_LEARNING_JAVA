@@ -76,7 +76,7 @@ public class ClientXML implements ClientProtocol {
                     System.out.print("\033[1A");
                     System.out.print("\033[2K");
                     System.out.flush();
-                    System.out.println("[" + login + "] " + line);
+
 
                     sendMessage(line);
                 }

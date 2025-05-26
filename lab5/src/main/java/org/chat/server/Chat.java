@@ -31,20 +31,19 @@ public class Chat {
         clients.remove(h);
     }
 
-    public void broadcastExcept(String message, ProtocolHandler except) {
+    public void broadcastExcept(String message) {
         synchronized (history) {
             if (history.size() == HISTORY_SIZE) history.removeFirst();
             history.addLast(message);
         }
         for (ProtocolHandler h : clients) {
-            if (h != except) {
-                senderPool.submit(() -> h.sendRaw(message));
-            }
+            senderPool.submit(() -> h.sendRaw(message));
+
         }
     }
 
     public void broadcast(String message) {
-        broadcastExcept(message, null);
+        broadcastExcept(message);
     }
 
     public List<String> getHistory() {

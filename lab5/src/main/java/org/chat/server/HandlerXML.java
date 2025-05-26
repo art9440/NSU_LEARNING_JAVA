@@ -103,7 +103,7 @@ public class HandlerXML implements ProtocolHandler {
             sendRaw(msg);
         }
 
-        chat.broadcastExcept("[SERVER] " + name + " has joined the chat", this);
+        chat.broadcastExcept("[SERVER] " + name + " has joined the chat");
     }
 
     private void handleMessage(Document doc) throws Exception {
@@ -119,7 +119,7 @@ public class HandlerXML implements ProtocolHandler {
         log("[MESSAGE] from %s: %s", name, text);
 
         String full = "[" + name + "] " + text;
-        chat.broadcastExcept(full, this);
+        chat.broadcastExcept(full);
         sendSuccess();
     }
 

@@ -115,7 +115,7 @@ public class HandlerOBJ implements ProtocolHandler {
                     }
                     log("[MESSAGE] from %s: %s", name, msg.message);
                     String full = "[" + name + "] " + msg.message;
-                    chat.broadcastExcept(full, this);
+                    chat.broadcastExcept(full);
                     sendObject(new Success());
 
                 } else if (obj instanceof ListCommand list) {
